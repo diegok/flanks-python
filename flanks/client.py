@@ -10,6 +10,7 @@ from flanks.credentials.client import CredentialsClient
 from flanks.entities.client import EntitiesClient
 from flanks.exceptions import FlanksConfigError
 from flanks.links.client import LinksClient
+from flanks.report.client import ReportClient
 
 
 class FlanksClient:
@@ -95,6 +96,11 @@ class FlanksClient:
     def links(self) -> LinksClient:
         """Client for Links API (legacy)."""
         return LinksClient(self.transport)
+
+    @cached_property
+    def report(self) -> ReportClient:
+        """Client for Report API (beta)."""
+        return ReportClient(self.transport)
 
     async def close(self) -> None:
         """Close the client and release resources."""
