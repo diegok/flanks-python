@@ -4,7 +4,6 @@ import respx
 
 from flanks import FlanksClient
 from flanks.connect.models import (
-    Connector,
     Session,
     SessionConfig,
     SessionQuery,
@@ -90,7 +89,10 @@ class TestConnectClient:
         respx.post("https://api.test.flanks.io/connect/v2/sessions/list-sessions").mock(
             return_value=httpx.Response(
                 200,
-                json={"items": [{"session_id": "s1", "status": "Finished:OK"}], "next_page_token": None},
+                json={
+                    "items": [{"session_id": "s1", "status": "Finished:OK"}],
+                    "next_page_token": None,
+                },
             )
         )
 

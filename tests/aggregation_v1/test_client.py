@@ -136,11 +136,7 @@ class TestAggregationV1Client:
         respx.post("https://api.test.flanks.io/v0/bank/credentials/investment").mock(
             return_value=httpx.Response(
                 200,
-                json={
-                    "investments": [
-                        {"investment_id": "i1", "name": "Stock A", "isin": "US123"}
-                    ]
-                },
+                json={"investments": [{"investment_id": "i1", "name": "Stock A", "isin": "US123"}]},
             )
         )
 
@@ -165,9 +161,7 @@ class TestAggregationV1Client:
             )
         )
 
-        respx.post(
-            "https://api.test.flanks.io/v0/bank/credentials/investment/transaction"
-        ).mock(
+        respx.post("https://api.test.flanks.io/v0/bank/credentials/investment/transaction").mock(
             return_value=httpx.Response(
                 200,
                 json={"transactions": [{"transaction_id": "t1", "amount": "1000.00"}]},
@@ -179,9 +173,7 @@ class TestAggregationV1Client:
             client_secret="secret",
             base_url="https://api.test.flanks.io",
         ) as client:
-            transactions = await client.aggregation_v1.get_investment_transactions(
-                "cred_token"
-            )
+            transactions = await client.aggregation_v1.get_investment_transactions("cred_token")
 
         assert len(transactions) == 1
         assert transactions[0].transaction_id == "t1"
@@ -235,9 +227,7 @@ class TestAggregationV1Client:
             client_secret="secret",
             base_url="https://api.test.flanks.io",
         ) as client:
-            transactions = await client.aggregation_v1.get_account_transactions(
-                "cred_token"
-            )
+            transactions = await client.aggregation_v1.get_account_transactions("cred_token")
 
         assert len(transactions) == 1
         assert transactions[0].transaction_id == "t1"
@@ -279,9 +269,7 @@ class TestAggregationV1Client:
             )
         )
 
-        respx.post(
-            "https://api.test.flanks.io/v0/bank/credentials/liability/transaction"
-        ).mock(
+        respx.post("https://api.test.flanks.io/v0/bank/credentials/liability/transaction").mock(
             return_value=httpx.Response(
                 200,
                 json={"transactions": [{"transaction_id": "t1", "amount": "-500.00"}]},
@@ -293,9 +281,7 @@ class TestAggregationV1Client:
             client_secret="secret",
             base_url="https://api.test.flanks.io",
         ) as client:
-            transactions = await client.aggregation_v1.get_liability_transactions(
-                "cred_token"
-            )
+            transactions = await client.aggregation_v1.get_liability_transactions("cred_token")
 
         assert len(transactions) == 1
         assert transactions[0].transaction_id == "t1"
