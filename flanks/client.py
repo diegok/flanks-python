@@ -9,6 +9,7 @@ from flanks.connection import FlanksConnection
 from flanks.credentials.client import CredentialsClient
 from flanks.entities.client import EntitiesClient
 from flanks.exceptions import FlanksConfigError
+from flanks.links.client import LinksClient
 
 
 class FlanksClient:
@@ -89,6 +90,11 @@ class FlanksClient:
         if self._version >= date(2026, 1, 1):
             return self.aggregation_v2
         return self.aggregation_v1
+
+    @cached_property
+    def links(self) -> LinksClient:
+        """Client for Links API (legacy)."""
+        return LinksClient(self.transport)
 
     async def close(self) -> None:
         """Close the client and release resources."""
