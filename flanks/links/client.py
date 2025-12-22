@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, cast
+from typing import cast
 
 from flanks.base import BaseClient
 from flanks.links.models import Link, LinkCode
@@ -9,7 +9,7 @@ from flanks.links.models import Link, LinkCode
 class LinksClient(BaseClient):
     """Client for Links API (legacy)."""
 
-    async def list(self) -> List[Link]:
+    async def list(self) -> list[Link]:
         """List all links."""
         response = await self._transport.api_call("/v0/links/list-links", method="GET")
         if not isinstance(response, dict):
@@ -70,7 +70,7 @@ class LinksClient(BaseClient):
             raise TypeError(f"Expected dict response, got {type(response)}")
         return Link.model_validate(response)
 
-    async def get_unused_codes(self, link_token: str) -> List[LinkCode]:
+    async def get_unused_codes(self, link_token: str) -> list[LinkCode]:
         """Get unused exchange codes for a link."""
         response = await self._transport.api_call(
             "/v0/platform/link",

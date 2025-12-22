@@ -6,7 +6,13 @@ import pytest
 import respx
 
 from flanks import FlanksClient
-from flanks.aggregation_v2.models import Product, ProductQuery, ProductType, Transaction, TransactionQuery
+from flanks.aggregation_v2.models import (
+    Product,
+    ProductQuery,
+    ProductType,
+    Transaction,
+    TransactionQuery,
+)
 from flanks.pagination import PagedResponse
 
 
@@ -102,7 +108,10 @@ class TestAggregationV2Client:
         respx.post("https://api.test.flanks.io/aggregation/v2/list-products").mock(
             return_value=httpx.Response(
                 200,
-                json={"items": [{"product_id": "p1", "product_type": "Account"}], "next_page_token": None},
+                json={
+                    "items": [{"product_id": "p1", "product_type": "Account"}],
+                    "next_page_token": None,
+                },
             )
         )
 
@@ -223,7 +232,10 @@ class TestAggregationV2Client:
         respx.post("https://api.test.flanks.io/aggregation/v2/list-transactions").mock(
             return_value=httpx.Response(
                 200,
-                json={"items": [{"transaction_id": "tx1", "amount": "100.00"}], "next_page_token": None},
+                json={
+                    "items": [{"transaction_id": "tx1", "amount": "100.00"}],
+                    "next_page_token": None,
+                },
             )
         )
 
@@ -233,7 +245,9 @@ class TestAggregationV2Client:
             base_url="https://api.test.flanks.io",
         ) as client:
             query = TransactionQuery(
-                product_id_in=["prod1"], date_from=datetime.date(2024, 1, 1), date_to=datetime.date(2024, 12, 31)
+                product_id_in=["prod1"],
+                date_from=datetime.date(2024, 1, 1),
+                date_to=datetime.date(2024, 12, 31),
             )
             transactions = [t async for t in client.aggregation_v2.list_transactions(query)]
 

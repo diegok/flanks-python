@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import datetime
-from typing import List, cast
+from typing import cast
 
 from flanks.base import BaseClient
 from flanks.report.models import Report, ReportTemplate
@@ -10,7 +10,7 @@ from flanks.report.models import Report, ReportTemplate
 class ReportClient(BaseClient):
     """Client for Report API (beta)."""
 
-    async def list_templates(self) -> List[ReportTemplate]:
+    async def list_templates(self) -> list[ReportTemplate]:
         """List all available report templates."""
         response = await self._transport.api_call("/report/v1/list-templates", method="GET")
         if not isinstance(response, dict):
@@ -27,6 +27,9 @@ class ReportClient(BaseClient):
         **kwargs: str | datetime.date,
     ) -> Report:
         """Build a new report."""
+        extra_fields = {
+            k: v.isoformat() if isinstance(v, datetime.date) else v for k, v in kwargs.items()
+        }
         response = await self._transport.api_call(
             "/report/v1/build-report",
             {
@@ -35,7 +38,7 @@ class ReportClient(BaseClient):
                 "start_date": start_date.isoformat(),
                 "end_date": end_date.isoformat(),
                 "credentials_token": credentials_token,
-                **{k: v.isoformat() if isinstance(v, datetime.date) else v for k, v in kwargs.items()},
+                **extra_fields,
             },
         )
         if not isinstance(response, dict):

@@ -72,7 +72,11 @@ class TestLinksClient:
         respx.post("https://api.test.flanks.io/v0/links/create-link").mock(
             return_value=httpx.Response(
                 200,
-                json={"link_token": "new_link", "name": "New Link", "redirect_uri": "https://example.com"},
+                json={
+                    "link_token": "new_link",
+                    "name": "New Link",
+                    "redirect_uri": "https://example.com",
+                },
             )
         )
 
