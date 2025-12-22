@@ -2,6 +2,7 @@ import os
 from datetime import date
 from functools import cached_property
 
+from flanks.connect.client import ConnectClient
 from flanks.connection import FlanksConnection
 from flanks.entities.client import EntitiesClient
 from flanks.exceptions import FlanksConfigError
@@ -58,6 +59,11 @@ class FlanksClient:
     def entities(self) -> EntitiesClient:
         """Client for Entities API."""
         return EntitiesClient(self.transport)
+
+    @cached_property
+    def connect(self) -> ConnectClient:
+        """Client for Connect API v2."""
+        return ConnectClient(self.transport)
 
     async def close(self) -> None:
         """Close the client and release resources."""
