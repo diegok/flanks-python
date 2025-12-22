@@ -3,6 +3,7 @@ from datetime import date
 from functools import cached_property
 
 from flanks.aggregation_v1.client import AggregationV1Client
+from flanks.aggregation_v2.client import AggregationV2Client
 from flanks.connect.client import ConnectClient
 from flanks.connection import FlanksConnection
 from flanks.credentials.client import CredentialsClient
@@ -76,6 +77,18 @@ class FlanksClient:
     def aggregation_v1(self) -> AggregationV1Client:
         """Client for Aggregation API v1."""
         return AggregationV1Client(self.transport)
+
+    @cached_property
+    def aggregation_v2(self) -> AggregationV2Client:
+        """Client for Aggregation API v2."""
+        return AggregationV2Client(self.transport)
+
+    @property
+    def aggregation(self) -> AggregationV1Client | AggregationV2Client:
+        """Version-based aggregation client (v2 for versions >= 2026-01-01, v1 otherwise)."""
+        if self._version >= date(2026, 1, 1):
+            return self.aggregation_v2
+        return self.aggregation_v1
 
     async def close(self) -> None:
         """Close the client and release resources."""
