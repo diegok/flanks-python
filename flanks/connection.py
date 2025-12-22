@@ -1,9 +1,17 @@
+import asyncio
 import time
 from functools import cached_property
+from typing import Any
 
 import httpx
 
-from flanks.exceptions import FlanksAuthError
+from flanks.exceptions import (
+    FlanksAuthError,
+    FlanksNetworkError,
+    FlanksNotFoundError,
+    FlanksServerError,
+    FlanksValidationError,
+)
 
 
 class FlanksConnection:
@@ -67,3 +75,75 @@ class FlanksConnection:
     async def close(self) -> None:
         """Close underlying HTTP client."""
         await self._http.aclose()
+
+    async def api_call(
+        self,
+        path: str,
+        body: dict[str, Any] | None = None,
+        method: str = "POST",
+    ) -> dict[str, Any] | list[Any]:
+        """Execute API call with automatic auth and retries."""
+        await self._ensure_token()
+
+        last_error: Exception | None = None
+        for attempt in range(self._retries + 1):
+            try:
+                return await self._execute(method, path, body)
+            except FlanksServerError as e:
+                last_error = e
+                if attempt < self._retries:
+                    await asyncio.sleep(self._retry_backoff * (2**attempt))
+            except FlanksAuthError:
+                # Token might have been revoked - refresh and retry once
+                await self._refresh_token()
+                try:
+                    return await self._execute(method, path, body)
+                except FlanksAuthError:
+                    raise
+
+        if last_error is not None:
+            raise last_error
+
+        raise RuntimeError("Unexpected state: no result and no error")
+
+    async def _execute(
+        self, method: str, path: str, body: dict[str, Any] | None
+    ) -> dict[str, Any] | list[Any]:
+        """Execute a single HTTP request."""
+        try:
+            response = await self._http.request(
+                method=method,
+                url=path,
+                json=body if method != "GET" else None,
+                headers={"Authorization": f"Bearer {self._access_token}"},
+            )
+        except httpx.HTTPError as e:
+            raise FlanksNetworkError(str(e), cause=e) from e
+
+        if response.status_code == 401:
+            raise FlanksAuthError(
+                "Invalid or expired token",
+                status_code=401,
+                response_body=response.json(),
+            )
+        if response.status_code == 400:
+            raise FlanksValidationError(
+                "Validation error",
+                status_code=400,
+                response_body=response.json(),
+            )
+        if response.status_code == 404:
+            raise FlanksNotFoundError(
+                "Resource not found",
+                status_code=404,
+                response_body=response.json(),
+            )
+        if response.status_code >= 500:
+            raise FlanksServerError(
+                "Server error",
+                status_code=response.status_code,
+                response_body=response.json(),
+            )
+
+        result: dict[str, Any] | list[Any] = response.json()
+        return result
