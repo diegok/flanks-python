@@ -3,6 +3,7 @@ from datetime import date
 from functools import cached_property
 
 from flanks.connection import FlanksConnection
+from flanks.entities.client import EntitiesClient
 from flanks.exceptions import FlanksConfigError
 
 
@@ -52,6 +53,11 @@ class FlanksClient:
             retries=self._retries,
             retry_backoff=self._retry_backoff,
         )
+
+    @cached_property
+    def entities(self) -> EntitiesClient:
+        """Client for Entities API."""
+        return EntitiesClient(self.transport)
 
     async def close(self) -> None:
         """Close the client and release resources."""
