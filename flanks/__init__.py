@@ -1,4 +1,5 @@
 from flanks._version import __version__
+from flanks.client import FlanksClient
 from flanks.exceptions import (
     FlanksAPIError,
     FlanksAuthError,
@@ -12,6 +13,7 @@ from flanks.exceptions import (
 
 __all__ = [
     "__version__",
+    "FlanksClient",
     "FlanksError",
     "FlanksConfigError",
     "FlanksAPIError",
