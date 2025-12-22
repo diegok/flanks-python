@@ -4,6 +4,7 @@ from functools import cached_property
 
 from flanks.connect.client import ConnectClient
 from flanks.connection import FlanksConnection
+from flanks.credentials.client import CredentialsClient
 from flanks.entities.client import EntitiesClient
 from flanks.exceptions import FlanksConfigError
 
@@ -64,6 +65,11 @@ class FlanksClient:
     def connect(self) -> ConnectClient:
         """Client for Connect API v2."""
         return ConnectClient(self.transport)
+
+    @cached_property
+    def credentials(self) -> CredentialsClient:
+        """Client for Credentials API."""
+        return CredentialsClient(self.transport)
 
     async def close(self) -> None:
         """Close the client and release resources."""
