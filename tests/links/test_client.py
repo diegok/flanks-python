@@ -3,26 +3,46 @@ import pytest
 import respx
 
 from flanks import FlanksClient
-from flanks.links.models import Link, LinkCode
+from flanks.links.models import Link, LinkCode, LinkCodeExchangeResult
 
 
 class TestLinksModels:
     def test_parses_link(self) -> None:
         link = Link.model_validate(
             {
-                "link_token": "link_123",
+                "token": "link_123",
                 "name": "My Banking Link",
                 "redirect_uri": "https://example.com/callback",
-                "is_paused": False,
+                "active": True,
+                "company_name": "Test Corp",
+                "pending_code_count": 5,
             }
         )
-        assert link.link_token == "link_123"
+        assert link.token == "link_123"
         assert link.name == "My Banking Link"
-        assert link.is_paused is False
+        assert link.active is True
+        assert link.company_name == "Test Corp"
+        assert link.pending_code_count == 5
 
     def test_parses_link_code(self) -> None:
-        code = LinkCode.model_validate({"code": "code_abc", "expires_at": "2024-12-31T23:59:59Z"})
+        code = LinkCode.model_validate(
+            {"code": "code_abc", "link_token": "link_123", "extra": {"user_id": "u1"}}
+        )
         assert code.code == "code_abc"
+        assert code.link_token == "link_123"
+        assert code.extra == {"user_id": "u1"}
+
+    def test_parses_exchange_result(self) -> None:
+        result = LinkCodeExchangeResult.model_validate(
+            {
+                "credentials_token": "cred_123",
+                "link_token": "link_456",
+                "extra": {"key": "value"},
+                "message": "Success",
+            }
+        )
+        assert result.credentials_token == "cred_123"
+        assert result.link_token == "link_456"
 
 
 class TestLinksClient:
@@ -39,12 +59,10 @@ class TestLinksClient:
         respx.get("https://api.test.flanks.io/v0/links/list-links").mock(
             return_value=httpx.Response(
                 200,
-                json={
-                    "links": [
-                        {"link_token": "link1", "name": "Link One"},
-                        {"link_token": "link2", "name": "Link Two"},
-                    ]
-                },
+                json=[
+                    {"token": "link1", "name": "Link One", "active": True},
+                    {"token": "link2", "name": "Link Two", "active": False},
+                ],
             )
         )
 
@@ -56,8 +74,9 @@ class TestLinksClient:
             links = await client.links.list()
 
         assert len(links) == 2
-        assert links[0].link_token == "link1"
+        assert links[0].token == "link1"
         assert links[1].name == "Link Two"
+        assert links[1].active is False
 
     @respx.mock
     @pytest.mark.asyncio
@@ -73,9 +92,10 @@ class TestLinksClient:
             return_value=httpx.Response(
                 200,
                 json={
-                    "link_token": "new_link",
+                    "token": "new_link",
                     "name": "New Link",
                     "redirect_uri": "https://example.com",
+                    "active": True,
                 },
             )
         )
@@ -85,9 +105,9 @@ class TestLinksClient:
             client_secret="secret",
             base_url="https://api.test.flanks.io",
         ) as client:
-            link = await client.links.create("https://example.com", "New Link")
+            link = await client.links.create("https://example.com", name="New Link")
 
-        assert link.link_token == "new_link"
+        assert link.token == "new_link"
         assert link.name == "New Link"
 
         # Verify request
@@ -110,7 +130,7 @@ class TestLinksClient:
         respx.post("https://api.test.flanks.io/v0/links/edit-link").mock(
             return_value=httpx.Response(
                 200,
-                json={"link_token": "link1", "name": "Updated Link"},
+                json={"token": "link1", "name": "Updated Link", "active": True},
             )
         )
 
@@ -123,6 +143,12 @@ class TestLinksClient:
 
         assert link.name == "Updated Link"
 
+        # Verify request uses 'token' not 'link_token'
+        import json
+
+        request_body = json.loads(respx.calls.last.request.content)
+        assert request_body["token"] == "link1"
+
     @respx.mock
     @pytest.mark.asyncio
     async def test_delete_link(self) -> None:
@@ -134,7 +160,7 @@ class TestLinksClient:
         )
 
         respx.post("https://api.test.flanks.io/v0/links/delete-link").mock(
-            return_value=httpx.Response(200, json={"success": True})
+            return_value=httpx.Response(200, json={"token": "link1"})
         )
 
         async with FlanksClient(
@@ -144,11 +170,11 @@ class TestLinksClient:
         ) as client:
             await client.links.delete("link1")
 
-        # Verify request
+        # Verify request uses 'token'
         import json
 
         request_body = json.loads(respx.calls.last.request.content)
-        assert request_body["link_token"] == "link1"
+        assert request_body["token"] == "link1"
 
     @respx.mock
     @pytest.mark.asyncio
@@ -161,7 +187,7 @@ class TestLinksClient:
         )
 
         respx.post("https://api.test.flanks.io/v0/links/pause-link").mock(
-            return_value=httpx.Response(200, json={"link_token": "link1", "is_paused": True})
+            return_value=httpx.Response(200, json={"token": "link1", "active": False})
         )
 
         async with FlanksClient(
@@ -171,7 +197,7 @@ class TestLinksClient:
         ) as client:
             link = await client.links.pause("link1")
 
-        assert link.is_paused is True
+        assert link.active is False
 
     @respx.mock
     @pytest.mark.asyncio
@@ -184,7 +210,7 @@ class TestLinksClient:
         )
 
         respx.post("https://api.test.flanks.io/v0/links/resume-link").mock(
-            return_value=httpx.Response(200, json={"link_token": "link1", "is_paused": False})
+            return_value=httpx.Response(200, json={"token": "link1", "active": True})
         )
 
         async with FlanksClient(
@@ -194,7 +220,7 @@ class TestLinksClient:
         ) as client:
             link = await client.links.resume("link1")
 
-        assert link.is_paused is False
+        assert link.active is True
 
     @respx.mock
     @pytest.mark.asyncio
@@ -209,12 +235,10 @@ class TestLinksClient:
         respx.get("https://api.test.flanks.io/v0/platform/link").mock(
             return_value=httpx.Response(
                 200,
-                json={
-                    "codes": [
-                        {"code": "code1", "expires_at": "2024-12-31T23:59:59Z"},
-                        {"code": "code2", "expires_at": "2024-12-31T23:59:59Z"},
-                    ]
-                },
+                json=[
+                    {"code": "code1", "link_token": "link1", "extra": {}},
+                    {"code": "code2", "link_token": "link1", "extra": {}},
+                ],
             )
         )
 
@@ -227,6 +251,34 @@ class TestLinksClient:
 
         assert len(codes) == 2
         assert codes[0].code == "code1"
+
+        # Verify query parameter was sent
+        request = respx.calls.last.request
+        assert "link_token=link1" in str(request.url)
+
+    @respx.mock
+    @pytest.mark.asyncio
+    async def test_get_unused_codes_no_filter(self) -> None:
+        """Test get_unused_codes without link_token filter."""
+        respx.post("https://api.test.flanks.io/v0/token").mock(
+            return_value=httpx.Response(
+                200,
+                json={"access_token": "token", "expires_in": 3600, "token_type": "Bearer"},
+            )
+        )
+
+        respx.get("https://api.test.flanks.io/v0/platform/link").mock(
+            return_value=httpx.Response(200, json=[])
+        )
+
+        async with FlanksClient(
+            client_id="id",
+            client_secret="secret",
+            base_url="https://api.test.flanks.io",
+        ) as client:
+            codes = await client.links.get_unused_codes()
+
+        assert codes == []
 
     @respx.mock
     @pytest.mark.asyncio
@@ -241,7 +293,12 @@ class TestLinksClient:
         respx.post("https://api.test.flanks.io/v0/platform/link").mock(
             return_value=httpx.Response(
                 200,
-                json={"credentials_token": "cred_token_123"},
+                json={
+                    "credentials_token": "cred_token_123",
+                    "link_token": "link1",
+                    "extra": {},
+                    "message": "Success",
+                },
             )
         )
 
@@ -250,9 +307,10 @@ class TestLinksClient:
             client_secret="secret",
             base_url="https://api.test.flanks.io",
         ) as client:
-            credentials_token = await client.links.exchange_code("code1")
+            result = await client.links.exchange_code("code1")
 
-        assert credentials_token == "cred_token_123"
+        assert result.credentials_token == "cred_token_123"
+        assert result.link_token == "link1"
 
         # Verify request
         import json

@@ -1,33 +1,41 @@
 from datetime import datetime
-from enum import Enum
 
 from pydantic import BaseModel, ConfigDict
 
 
-class CredentialStatus(str, Enum):
-    ACTIVE = "active"
-    PENDING = "pending"
-    ERROR = "error"
-    EXPIRED = "expired"
-
-
 class Credential(BaseModel):
-    """A stored credential."""
+    """A stored credential from the list endpoint."""
 
     model_config = ConfigDict(extra="ignore", frozen=True)
 
     credentials_token: str
-    entity_id: str
-    status: CredentialStatus
-    created_at: datetime | None = None
-    updated_at: datetime | None = None
+    external_id: str | None = None
+    bank: str | None = None
+    status: str | None = None
 
 
-class CredentialStatusResponse(BaseModel):
-    """Response from get_status endpoint."""
+class CredentialsListResponse(BaseModel):
+    """Response from the list credentials endpoint."""
 
     model_config = ConfigDict(extra="ignore", frozen=True)
 
-    credentials_token: str
-    status: CredentialStatus
-    entity_id: str | None = None
+    items: list[Credential]
+    page: int
+    pages: int
+
+
+class CredentialStatus(BaseModel):
+    """Response from get_status endpoint with full credential status."""
+
+    model_config = ConfigDict(extra="ignore", frozen=True)
+
+    pending: bool | None = None
+    blocked: bool | None = None
+    reset_token: str | None = None
+    sca_token: str | None = None
+    transaction_token: str | None = None
+    name: str | None = None
+    last_update: datetime | None = None
+    last_transaction_date: datetime | None = None
+    errored: bool | None = None
+    created: datetime | None = None

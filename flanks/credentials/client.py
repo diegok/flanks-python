@@ -1,11 +1,15 @@
+from __future__ import annotations
+
+import builtins
+
 from flanks.base import BaseClient
-from flanks.credentials.models import Credential, CredentialStatusResponse
+from flanks.credentials.models import Credential, CredentialStatus, CredentialsListResponse
 
 
 class CredentialsClient(BaseClient):
     """Client for Credentials API."""
 
-    async def get_status(self, credentials_token: str) -> CredentialStatusResponse:
+    async def get_status(self, credentials_token: str) -> CredentialStatus:
         """Get status of a credential."""
         response = await self._transport.api_call(
             "/v0/bank/credentials/status",
@@ -13,40 +17,74 @@ class CredentialsClient(BaseClient):
         )
         if not isinstance(response, dict):
             raise TypeError(f"Expected dict response, got {type(response)}")
-        return CredentialStatusResponse.model_validate(response)
+        return CredentialStatus.model_validate(response)
 
-    async def list(self, page: int = 1) -> list[Credential]:
-        """List credentials with page-number pagination."""
+    async def list(self, page: int = 1) -> CredentialsListResponse:
+        """List credentials with page-number pagination.
+
+        Returns a response with items, page number, and total pages.
+        """
         response = await self._transport.api_call(
             "/v0/bank/credentials/list",
             {"page": page},
         )
         if not isinstance(response, dict):
             raise TypeError(f"Expected dict response, got {type(response)}")
-        return [Credential.model_validate(item) for item in response.get("credentials", [])]
+        return CredentialsListResponse.model_validate(response)
 
-    async def force_sca(self, credentials_token: str) -> CredentialStatusResponse:
-        """Force SCA (Strong Customer Authentication) refresh."""
-        return await self._update_status(credentials_token, "force_sca")
+    async def list_all(self) -> builtins.list[Credential]:
+        """List all credentials across all pages."""
+        all_credentials: builtins.list[Credential] = []
+        page = 1
+        while True:
+            response = await self.list(page)
+            all_credentials.extend(response.items)
+            if page >= response.pages:
+                break
+            page += 1
+        return all_credentials
 
-    async def force_reset(self, credentials_token: str) -> CredentialStatusResponse:
-        """Force credential reset."""
-        return await self._update_status(credentials_token, "force_reset")
+    async def force_sca(self, credentials_token: str) -> str:
+        """Force SCA (Strong Customer Authentication) refresh.
 
-    async def force_transaction(self, credentials_token: str) -> CredentialStatusResponse:
-        """Force transaction data refresh."""
-        return await self._update_status(credentials_token, "force_transaction")
-
-    async def _update_status(self, credentials_token: str, action: str) -> CredentialStatusResponse:
-        """Internal helper for status update operations."""
+        Returns the sca_token to use with Connect API.
+        """
         response = await self._transport.api_call(
             "/v0/bank/credentials/status",
-            {"credentials_token": credentials_token, "action": action},
+            {"credentials_token": credentials_token, "force": "sca"},
             method="PUT",
         )
         if not isinstance(response, dict):
             raise TypeError(f"Expected dict response, got {type(response)}")
-        return CredentialStatusResponse.model_validate(response)
+        return str(response["sca_token"])
+
+    async def force_reset(self, credentials_token: str) -> str:
+        """Force credential reset.
+
+        Returns the reset_token to use with Connect API.
+        """
+        response = await self._transport.api_call(
+            "/v0/bank/credentials/status",
+            {"credentials_token": credentials_token, "force": "reset"},
+            method="PUT",
+        )
+        if not isinstance(response, dict):
+            raise TypeError(f"Expected dict response, got {type(response)}")
+        return str(response["reset_token"])
+
+    async def force_transaction(self, credentials_token: str) -> str:
+        """Force transaction data refresh.
+
+        Returns the transaction_token to use with Connect API.
+        """
+        response = await self._transport.api_call(
+            "/v0/bank/credentials/status",
+            {"credentials_token": credentials_token, "force": "transaction"},
+            method="PUT",
+        )
+        if not isinstance(response, dict):
+            raise TypeError(f"Expected dict response, got {type(response)}")
+        return str(response["transaction_token"])
 
     async def delete(self, credentials_token: str) -> None:
         """Delete a credential."""

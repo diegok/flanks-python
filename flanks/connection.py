@@ -81,14 +81,22 @@ class FlanksConnection:
         path: str,
         body: dict[str, Any] | None = None,
         method: str = "POST",
+        params: dict[str, Any] | None = None,
     ) -> dict[str, Any] | list[Any]:
-        """Execute API call with automatic auth and retries."""
+        """Execute API call with automatic auth and retries.
+
+        Args:
+            path: API endpoint path
+            body: JSON body for POST/PUT/DELETE requests
+            method: HTTP method (GET, POST, PUT, DELETE)
+            params: Query parameters for GET requests
+        """
         await self._ensure_token()
 
         last_error: Exception | None = None
         for attempt in range(self._retries + 1):
             try:
-                return await self._execute(method, path, body)
+                return await self._execute(method, path, body, params)
             except FlanksServerError as e:
                 last_error = e
                 if attempt < self._retries:
@@ -97,7 +105,7 @@ class FlanksConnection:
                 # Token might have been revoked - refresh and retry once
                 await self._refresh_token()
                 try:
-                    return await self._execute(method, path, body)
+                    return await self._execute(method, path, body, params)
                 except FlanksAuthError:
                     raise
 
@@ -107,7 +115,11 @@ class FlanksConnection:
         raise RuntimeError("Unexpected state: no result and no error")
 
     async def _execute(
-        self, method: str, path: str, body: dict[str, Any] | None
+        self,
+        method: str,
+        path: str,
+        body: dict[str, Any] | None,
+        params: dict[str, Any] | None = None,
     ) -> dict[str, Any] | list[Any]:
         """Execute a single HTTP request."""
         try:
@@ -115,6 +127,7 @@ class FlanksConnection:
                 method=method,
                 url=path,
                 json=body if method != "GET" else None,
+                params=params,
                 headers={"Authorization": f"Bearer {self._access_token}"},
             )
         except httpx.HTTPError as e:

@@ -6,9 +6,11 @@ from pydantic import BaseModel, ConfigDict
 class ReportStatus(str, Enum):
     """Report generation status."""
 
-    PROCESSING = "Processing"
-    COMPLETED = "Completed"
-    FAILED = "Failed"
+    NEW = "new"
+    PAYLOAD = "payload"
+    FILE = "file"
+    READY = "ready"
+    FAIL = "fail"
 
 
 class ReportTemplate(BaseModel):
@@ -16,7 +18,7 @@ class ReportTemplate(BaseModel):
 
     model_config = ConfigDict(extra="ignore", frozen=True)
 
-    template_id: str
+    template_id: int
     name: str | None = None
     description: str | None = None
 
@@ -26,8 +28,6 @@ class Report(BaseModel):
 
     model_config = ConfigDict(extra="ignore", frozen=True)
 
-    report_id: str
-    template_id: str | None = None
-    status: ReportStatus
-    created_at: str | None = None
-    error_message: str | None = None
+    report_id: int
+    template_id: int | None = None
+    status: ReportStatus | None = None

@@ -109,7 +109,7 @@ class TestAggregationV1Client:
         respx.post("https://api.test.flanks.io/v0/bank/credentials/portfolio").mock(
             return_value=httpx.Response(
                 200,
-                json={"portfolios": [{"portfolio_id": "p1", "name": "Portfolio 1"}]},
+                json=[{"portfolio_id": "p1", "name": "Portfolio 1"}],
             )
         )
 
@@ -136,7 +136,7 @@ class TestAggregationV1Client:
         respx.post("https://api.test.flanks.io/v0/bank/credentials/investment").mock(
             return_value=httpx.Response(
                 200,
-                json={"investments": [{"investment_id": "i1", "name": "Stock A", "isin": "US123"}]},
+                json=[{"investment_id": "i1", "name": "Stock A", "isin": "US123"}],
             )
         )
 
@@ -164,7 +164,7 @@ class TestAggregationV1Client:
         respx.post("https://api.test.flanks.io/v0/bank/credentials/investment/transaction").mock(
             return_value=httpx.Response(
                 200,
-                json={"transactions": [{"transaction_id": "t1", "amount": "1000.00"}]},
+                json=[{"transaction_id": "t1", "amount": "1000.00"}],
             )
         )
 
@@ -191,7 +191,7 @@ class TestAggregationV1Client:
         respx.post("https://api.test.flanks.io/v0/bank/credentials/account").mock(
             return_value=httpx.Response(
                 200,
-                json={"accounts": [{"account_id": "a1", "iban": "ES1234"}]},
+                json=[{"account_id": "a1", "iban": "ES1234"}],
             )
         )
 
@@ -218,7 +218,7 @@ class TestAggregationV1Client:
         respx.post("https://api.test.flanks.io/v0/bank/credentials/data").mock(
             return_value=httpx.Response(
                 200,
-                json={"transactions": [{"transaction_id": "t1", "amount": "-50.00"}]},
+                json=[{"transaction_id": "t1", "amount": "-50.00"}],
             )
         )
 
@@ -245,7 +245,7 @@ class TestAggregationV1Client:
         respx.post("https://api.test.flanks.io/v0/bank/credentials/liability").mock(
             return_value=httpx.Response(
                 200,
-                json={"liabilities": [{"liability_id": "l1", "name": "Mortgage"}]},
+                json=[{"liability_id": "l1", "name": "Mortgage"}],
             )
         )
 
@@ -272,7 +272,7 @@ class TestAggregationV1Client:
         respx.post("https://api.test.flanks.io/v0/bank/credentials/liability/transaction").mock(
             return_value=httpx.Response(
                 200,
-                json={"transactions": [{"transaction_id": "t1", "amount": "-500.00"}]},
+                json=[{"transaction_id": "t1", "amount": "-500.00"}],
             )
         )
 
@@ -299,7 +299,7 @@ class TestAggregationV1Client:
         respx.post("https://api.test.flanks.io/v0/bank/credentials/card").mock(
             return_value=httpx.Response(
                 200,
-                json={"cards": [{"card_id": "c1", "masked_number": "****5678"}]},
+                json=[{"card_id": "c1", "masked_number": "****5678"}],
             )
         )
 
@@ -326,7 +326,7 @@ class TestAggregationV1Client:
         respx.post("https://api.test.flanks.io/v0/bank/credentials/card/transaction").mock(
             return_value=httpx.Response(
                 200,
-                json={"transactions": [{"transaction_id": "t1", "amount": "-25.00"}]},
+                json=[{"transaction_id": "t1", "amount": "-25.00"}],
             )
         )
 
@@ -353,7 +353,7 @@ class TestAggregationV1Client:
         respx.post("https://api.test.flanks.io/v0/bank/credentials/auth/").mock(
             return_value=httpx.Response(
                 200,
-                json={"identity": {"name": "John Doe", "email": "john@example.com"}},
+                json={"name": "John Doe", "email": "john@example.com"},
             )
         )
 
@@ -369,7 +369,7 @@ class TestAggregationV1Client:
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_get_identity_returns_none_when_missing(self) -> None:
+    async def test_get_identity_returns_none_when_empty(self) -> None:
         respx.post("https://api.test.flanks.io/v0/token").mock(
             return_value=httpx.Response(
                 200,
@@ -403,7 +403,7 @@ class TestAggregationV1Client:
         respx.post("https://api.test.flanks.io/v0/bank/credentials/holder").mock(
             return_value=httpx.Response(
                 200,
-                json={"holders": [{"holder_id": "h1", "name": "Jane Doe"}]},
+                json=[{"holder_id": "h1", "name": "Jane Doe"}],
             )
         )
 
@@ -419,7 +419,7 @@ class TestAggregationV1Client:
 
     @respx.mock
     @pytest.mark.asyncio
-    async def test_get_portfolios_with_query_params(self) -> None:
+    async def test_get_portfolios_with_query(self) -> None:
         respx.post("https://api.test.flanks.io/v0/token").mock(
             return_value=httpx.Response(
                 200,
@@ -428,7 +428,7 @@ class TestAggregationV1Client:
         )
 
         route = respx.post("https://api.test.flanks.io/v0/bank/credentials/portfolio").mock(
-            return_value=httpx.Response(200, json={"portfolios": []})
+            return_value=httpx.Response(200, json=[])
         )
 
         async with FlanksClient(
@@ -437,13 +437,15 @@ class TestAggregationV1Client:
             base_url="https://api.test.flanks.io",
         ) as client:
             await client.aggregation_v1.get_portfolios(
-                "cred_token", include_details=True, filter_currency="EUR"
+                "cred_token",
+                query={"portfolio_id": ["p1", "p2"]},
+                ignore_data_error=True,
             )
 
-        # Verify the query params were sent in the request body
+        # Verify the query structure in the request body
         import json
 
         request_body = json.loads(route.calls.last.request.content)
         assert request_body["credentials_token"] == "cred_token"
-        assert request_body["include_details"] is True
-        assert request_body["filter_currency"] == "EUR"
+        assert request_body["query"] == {"portfolio_id": ["p1", "p2"]}
+        assert request_body["ignore_data_error"] is True

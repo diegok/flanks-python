@@ -19,146 +19,207 @@ class AggregationV1Client(BaseClient):
     async def get_portfolios(
         self,
         credentials_token: str,
-        **query: Any,
+        query: dict[str, Any] | None = None,
+        ignore_data_error: bool = False,
     ) -> list[Portfolio]:
         """Get investment portfolios."""
         response = await self._transport.api_call(
             "/v0/bank/credentials/portfolio",
-            {"credentials_token": credentials_token, **query},
+            {
+                "credentials_token": credentials_token,
+                "query": query or {},
+                "ignore_data_error": ignore_data_error,
+            },
         )
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return [Portfolio.model_validate(item) for item in response.get("portfolios", [])]
+        if not isinstance(response, list):
+            raise TypeError(f"Expected list response, got {type(response)}")
+        return [Portfolio.model_validate(item) for item in response]
 
     async def get_investments(
         self,
         credentials_token: str,
-        **query: Any,
+        query: dict[str, Any] | None = None,
+        ignore_data_error: bool = False,
     ) -> list[Investment]:
         """Get investment positions."""
         response = await self._transport.api_call(
             "/v0/bank/credentials/investment",
-            {"credentials_token": credentials_token, **query},
+            {
+                "credentials_token": credentials_token,
+                "query": query or {},
+                "ignore_data_error": ignore_data_error,
+            },
         )
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return [Investment.model_validate(item) for item in response.get("investments", [])]
+        if not isinstance(response, list):
+            raise TypeError(f"Expected list response, got {type(response)}")
+        return [Investment.model_validate(item) for item in response]
 
     async def get_investment_transactions(
         self,
         credentials_token: str,
-        **query: Any,
+        query: dict[str, Any] | None = None,
+        ignore_data_error: bool = False,
     ) -> list[Transaction]:
         """Get investment transactions."""
         response = await self._transport.api_call(
             "/v0/bank/credentials/investment/transaction",
-            {"credentials_token": credentials_token, **query},
+            {
+                "credentials_token": credentials_token,
+                "query": query or {},
+                "ignore_data_error": ignore_data_error,
+            },
         )
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return [Transaction.model_validate(item) for item in response.get("transactions", [])]
+        if not isinstance(response, list):
+            raise TypeError(f"Expected list response, got {type(response)}")
+        return [Transaction.model_validate(item) for item in response]
 
     async def get_accounts(
         self,
         credentials_token: str,
-        **query: Any,
+        query: dict[str, Any] | None = None,
+        ignore_data_error: bool = False,
     ) -> list[Account]:
         """Get bank accounts."""
         response = await self._transport.api_call(
             "/v0/bank/credentials/account",
-            {"credentials_token": credentials_token, **query},
+            {
+                "credentials_token": credentials_token,
+                "query": query or {},
+                "ignore_data_error": ignore_data_error,
+            },
         )
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return [Account.model_validate(item) for item in response.get("accounts", [])]
+        if not isinstance(response, list):
+            raise TypeError(f"Expected list response, got {type(response)}")
+        return [Account.model_validate(item) for item in response]
 
     async def get_account_transactions(
         self,
         credentials_token: str,
-        **query: Any,
+        query: dict[str, Any] | None = None,
+        ignore_data_error: bool = False,
     ) -> list[Transaction]:
         """Get account transactions."""
         response = await self._transport.api_call(
             "/v0/bank/credentials/data",
-            {"credentials_token": credentials_token, **query},
+            {
+                "credentials_token": credentials_token,
+                "query": query or {},
+                "ignore_data_error": ignore_data_error,
+            },
         )
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return [Transaction.model_validate(item) for item in response.get("transactions", [])]
+        if not isinstance(response, list):
+            raise TypeError(f"Expected list response, got {type(response)}")
+        return [Transaction.model_validate(item) for item in response]
 
     async def get_liabilities(
         self,
         credentials_token: str,
-        **query: Any,
+        query: dict[str, Any] | None = None,
+        ignore_data_error: bool = False,
     ) -> list[Liability]:
         """Get liabilities (loans, mortgages)."""
         response = await self._transport.api_call(
             "/v0/bank/credentials/liability",
-            {"credentials_token": credentials_token, **query},
+            {
+                "credentials_token": credentials_token,
+                "query": query or {},
+                "ignore_data_error": ignore_data_error,
+            },
         )
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return [Liability.model_validate(item) for item in response.get("liabilities", [])]
+        if not isinstance(response, list):
+            raise TypeError(f"Expected list response, got {type(response)}")
+        return [Liability.model_validate(item) for item in response]
 
     async def get_liability_transactions(
         self,
         credentials_token: str,
-        **query: Any,
+        query: dict[str, Any] | None = None,
+        ignore_data_error: bool = False,
     ) -> list[Transaction]:
         """Get liability transactions."""
         response = await self._transport.api_call(
             "/v0/bank/credentials/liability/transaction",
-            {"credentials_token": credentials_token, **query},
+            {
+                "credentials_token": credentials_token,
+                "query": query or {},
+                "ignore_data_error": ignore_data_error,
+            },
         )
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return [Transaction.model_validate(item) for item in response.get("transactions", [])]
+        if not isinstance(response, list):
+            raise TypeError(f"Expected list response, got {type(response)}")
+        return [Transaction.model_validate(item) for item in response]
 
     async def get_cards(
         self,
         credentials_token: str,
-        **query: Any,
+        query: dict[str, Any] | None = None,
+        ignore_data_error: bool = False,
     ) -> list[Card]:
         """Get credit/debit cards."""
         response = await self._transport.api_call(
             "/v0/bank/credentials/card",
-            {"credentials_token": credentials_token, **query},
+            {
+                "credentials_token": credentials_token,
+                "query": query or {},
+                "ignore_data_error": ignore_data_error,
+            },
         )
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return [Card.model_validate(item) for item in response.get("cards", [])]
+        if not isinstance(response, list):
+            raise TypeError(f"Expected list response, got {type(response)}")
+        return [Card.model_validate(item) for item in response]
 
     async def get_card_transactions(
         self,
         credentials_token: str,
-        **query: Any,
+        query: dict[str, Any] | None = None,
+        ignore_data_error: bool = False,
     ) -> list[Transaction]:
         """Get card transactions."""
         response = await self._transport.api_call(
             "/v0/bank/credentials/card/transaction",
-            {"credentials_token": credentials_token, **query},
+            {
+                "credentials_token": credentials_token,
+                "query": query or {},
+                "ignore_data_error": ignore_data_error,
+            },
         )
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return [Transaction.model_validate(item) for item in response.get("transactions", [])]
+        if not isinstance(response, list):
+            raise TypeError(f"Expected list response, got {type(response)}")
+        return [Transaction.model_validate(item) for item in response]
 
-    async def get_identity(self, credentials_token: str) -> Identity | None:
-        """Get account holder identity."""
+    async def get_identity(
+        self,
+        credentials_token: str,
+        ignore_data_error: bool = False,
+    ) -> Identity | None:
+        """Get account holder identity.
+
+        Note: This endpoint returns a single object, not an array.
+        """
         response = await self._transport.api_call(
             "/v0/bank/credentials/auth/",
-            {"credentials_token": credentials_token},
+            {
+                "credentials_token": credentials_token,
+                "ignore_data_error": ignore_data_error,
+            },
         )
         if not isinstance(response, dict):
             raise TypeError(f"Expected dict response, got {type(response)}")
-        identity_data = response.get("identity")
-        return Identity.model_validate(identity_data) if identity_data else None
+        return Identity.model_validate(response) if response else None
 
-    async def get_holders(self, credentials_token: str) -> list[Holder]:
+    async def get_holders(
+        self,
+        credentials_token: str,
+        ignore_data_error: bool = False,
+    ) -> list[Holder]:
         """Get account holders."""
         response = await self._transport.api_call(
             "/v0/bank/credentials/holder",
-            {"credentials_token": credentials_token},
+            {
+                "credentials_token": credentials_token,
+                "ignore_data_error": ignore_data_error,
+            },
         )
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return [Holder.model_validate(item) for item in response.get("holders", [])]
+        if not isinstance(response, list):
+            raise TypeError(f"Expected list response, got {type(response)}")
+        return [Holder.model_validate(item) for item in response]
