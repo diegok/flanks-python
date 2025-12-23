@@ -48,7 +48,7 @@ class TestReportClient:
             )
         )
 
-        respx.get("https://api.test.flanks.io/report/v1/list-templates").mock(
+        respx.post("https://api.test.flanks.io/report/v1/list-templates").mock(
             return_value=httpx.Response(
                 200,
                 json={
