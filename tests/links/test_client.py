@@ -56,7 +56,7 @@ class TestLinksClient:
             )
         )
 
-        respx.get("https://api.test.flanks.io/v0/links/list-links").mock(
+        respx.post("https://api.test.flanks.io/v0/links/list-links").mock(
             return_value=httpx.Response(
                 200,
                 json=[

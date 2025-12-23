@@ -11,7 +11,7 @@ class LinksClient(BaseClient):
 
     async def list(self) -> list[Link]:
         """List all links."""
-        response = await self._transport.api_call("/v0/links/list-links", method="GET")
+        response = await self._transport.api_call("/v0/links/list-links", {})
         if not isinstance(response, list):
             raise TypeError(f"Expected list response, got {type(response)}")
         return [Link.model_validate(item) for item in response]
