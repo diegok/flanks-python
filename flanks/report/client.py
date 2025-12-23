@@ -12,7 +12,7 @@ class ReportClient(BaseClient):
 
     async def list_templates(self) -> list[ReportTemplate]:
         """List all available report templates."""
-        response = await self._transport.api_call("/report/v1/list-templates", {})
+        response = await self._transport.api_call("/report/v1/list-templates")
         if not isinstance(response, dict):
             raise TypeError(f"Expected dict response, got {type(response)}")
         return [ReportTemplate.model_validate(item) for item in response.get("items", [])]
