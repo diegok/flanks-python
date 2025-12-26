@@ -16,7 +16,7 @@ class TestBaseClient:
     def test_stores_transport(self) -> None:
         transport = FlanksConnection(client_id="id", client_secret="secret")
         client = BaseClient(transport)
-        assert client._transport is transport
+        assert client.transport is transport
 
 
 class TestPaginate:

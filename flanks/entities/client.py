@@ -13,8 +13,8 @@ class EntitiesClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/entities-api/#get-entities
         """
-        return await self._transport.api_call(
+        return await self.api_call(
             "/v0/bank/available",
             method="GET",
-            response_model=list[Entity],
+            model=list[Entity],
         )

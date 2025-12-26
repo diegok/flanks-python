@@ -36,7 +36,7 @@ class AggregationV2Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/v2/#list-products
         """
-        response = await self._transport.api_call(
+        response = await self.transport.api_call(
             "/aggregation/v2/list-products",
             {
                 "query": query.model_dump(exclude_none=True) if query else {},
@@ -55,7 +55,7 @@ class AggregationV2Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/v2/#set-product-labels
         """
-        await self._transport.api_call(
+        await self.transport.api_call(
             "/aggregation/v2/set-product-labels",
             {
                 "product_id": product_id,
@@ -88,7 +88,7 @@ class AggregationV2Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/v2/#list-transactions
         """
-        response = await self._transport.api_call(
+        response = await self.transport.api_call(
             "/aggregation/v2/list-transactions",
             {
                 "query": query.model_dump(exclude_none=True, mode="json") if query else {},
@@ -107,7 +107,7 @@ class AggregationV2Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/v2/#set-transaction-labels
         """
-        await self._transport.api_call(
+        await self.transport.api_call(
             "/aggregation/v2/set-transaction-labels",
             {
                 "transaction_id": transaction_id,

@@ -17,9 +17,9 @@ class LinksClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/links-api/#list-links
         """
-        return await self._transport.api_call(
+        return await self.api_call(
             "/v0/links/list-links",
-            response_model=list[Link],
+            model=list[Link],
         )
 
     async def create(
@@ -45,10 +45,10 @@ class LinksClient(BaseClient):
         if privacy_policy_url is not None:
             body["privacy_policy_url"] = privacy_policy_url
 
-        return await self._transport.api_call(
+        return await self.api_call(
             "/v0/links/create-link",
             body,
-            response_model=Link,
+            model=Link,
         )
 
     async def edit(
@@ -77,10 +77,10 @@ class LinksClient(BaseClient):
         if privacy_policy_url is not None:
             body["privacy_policy_url"] = privacy_policy_url
 
-        return await self._transport.api_call(
+        return await self.api_call(
             "/v0/links/edit-link",
             body,
-            response_model=Link,
+            model=Link,
         )
 
     async def delete(self, token: str) -> None:
@@ -88,17 +88,17 @@ class LinksClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/links-api/#delete-link
         """
-        await self._transport.api_call("/v0/links/delete-link", {"token": token})
+        await self.transport.api_call("/v0/links/delete-link", {"token": token})
 
     async def pause(self, token: str) -> Link:
         """Pause a link.
 
         See: https://docs.flanks.io/pages/flanks-apis/links-api/#pause-link
         """
-        return await self._transport.api_call(
+        return await self.api_call(
             "/v0/links/pause-link",
             {"token": token},
-            response_model=Link,
+            model=Link,
         )
 
     async def resume(self, token: str) -> Link:
@@ -106,10 +106,10 @@ class LinksClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/links-api/#resume-link
         """
-        return await self._transport.api_call(
+        return await self.api_call(
             "/v0/links/resume-link",
             {"token": token},
-            response_model=Link,
+            model=Link,
         )
 
     async def get_unused_codes(self, link_token: str | None = None) -> builtins.list[LinkCode]:
@@ -118,11 +118,11 @@ class LinksClient(BaseClient):
         See: https://docs.flanks.io/pages/flanks-apis/links-api/#get-unused-link-codes
         """
         params = {"link_token": link_token} if link_token else None
-        return await self._transport.api_call(
+        return await self.api_call(
             "/v0/platform/link",
             method="GET",
             params=params,
-            response_model=list[LinkCode],
+            model=list[LinkCode],
         )
 
     async def exchange_code(self, code: str) -> LinkCodeExchangeResult:
@@ -130,8 +130,8 @@ class LinksClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/links-api/#exchange-link-code-for-credentials-token
         """
-        return await self._transport.api_call(
+        return await self.api_call(
             "/v0/platform/link",
             {"code": code},
-            response_model=LinkCodeExchangeResult,
+            model=LinkCodeExchangeResult,
         )

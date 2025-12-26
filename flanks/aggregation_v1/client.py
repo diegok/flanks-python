@@ -29,14 +29,14 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-portfolios
         """
-        return await self._transport.api_call(
+        return await self.api_call(
             "/v0/bank/credentials/portfolio",
             {
                 "credentials_token": credentials_token,
                 "query": query or {},
                 "ignore_data_error": ignore_data_error,
             },
-            response_model=list[Portfolio],
+            model=list[Portfolio],
         )
 
     async def get_investments(
@@ -49,14 +49,14 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-investments
         """
-        return await self._transport.api_call(
+        return await self.api_call(
             "/v0/bank/credentials/investment",
             {
                 "credentials_token": credentials_token,
                 "query": query or {},
                 "ignore_data_error": ignore_data_error,
             },
-            response_model=list[Investment],
+            model=list[Investment],
         )
 
     async def get_investment_transactions(
@@ -69,14 +69,14 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-investment-transactions
         """
-        return await self._transport.api_call(
+        return await self.api_call(
             "/v0/bank/credentials/investment/transaction",
             {
                 "credentials_token": credentials_token,
                 "query": query or {},
                 "ignore_data_error": ignore_data_error,
             },
-            response_model=list[Transaction],
+            model=list[Transaction],
         )
 
     async def get_accounts(
@@ -89,14 +89,14 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-accounts
         """
-        return await self._transport.api_call(
+        return await self.api_call(
             "/v0/bank/credentials/account",
             {
                 "credentials_token": credentials_token,
                 "query": query or {},
                 "ignore_data_error": ignore_data_error,
             },
-            response_model=list[Account],
+            model=list[Account],
         )
 
     async def get_account_transactions(
@@ -109,14 +109,14 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-account-transactions
         """
-        return await self._transport.api_call(
+        return await self.api_call(
             "/v0/bank/credentials/data",
             {
                 "credentials_token": credentials_token,
                 "query": query or {},
                 "ignore_data_error": ignore_data_error,
             },
-            response_model=list[Transaction],
+            model=list[Transaction],
         )
 
     async def get_liabilities(
@@ -129,14 +129,14 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-liabilities
         """
-        return await self._transport.api_call(
+        return await self.api_call(
             "/v0/bank/credentials/liability",
             {
                 "credentials_token": credentials_token,
                 "query": query or {},
                 "ignore_data_error": ignore_data_error,
             },
-            response_model=list[Liability],
+            model=list[Liability],
         )
 
     async def get_liability_transactions(
@@ -149,14 +149,14 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-liability-transactions
         """
-        return await self._transport.api_call(
+        return await self.api_call(
             "/v0/bank/credentials/liability/transaction",
             {
                 "credentials_token": credentials_token,
                 "query": query or {},
                 "ignore_data_error": ignore_data_error,
             },
-            response_model=list[Transaction],
+            model=list[Transaction],
         )
 
     async def get_cards(
@@ -169,14 +169,14 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-cards
         """
-        return await self._transport.api_call(
+        return await self.api_call(
             "/v0/bank/credentials/card",
             {
                 "credentials_token": credentials_token,
                 "query": query or {},
                 "ignore_data_error": ignore_data_error,
             },
-            response_model=list[Card],
+            model=list[Card],
         )
 
     async def get_card_transactions(
@@ -189,14 +189,14 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-card-transactions
         """
-        return await self._transport.api_call(
+        return await self.api_call(
             "/v0/bank/credentials/card/transaction",
             {
                 "credentials_token": credentials_token,
                 "query": query or {},
                 "ignore_data_error": ignore_data_error,
             },
-            response_model=list[Transaction],
+            model=list[Transaction],
         )
 
     async def get_identity(
@@ -210,7 +210,7 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-identity
         """
-        response = await self._transport.api_call(
+        response = await self.transport.api_call(
             "/v0/bank/credentials/auth/",
             {
                 "credentials_token": credentials_token,
@@ -230,11 +230,11 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-holders
         """
-        return await self._transport.api_call(
+        return await self.api_call(
             "/v0/bank/credentials/holder",
             {
                 "credentials_token": credentials_token,
                 "ignore_data_error": ignore_data_error,
             },
-            response_model=list[Holder],
+            model=list[Holder],
         )

@@ -17,10 +17,10 @@ class CredentialsClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/credentials-api/#get-credentials-status
         """
-        return await self._transport.api_call(
+        return await self.api_call(
             "/v0/bank/credentials/status",
             {"credentials_token": credentials_token},
-            response_model=CredentialStatus,
+            model=CredentialStatus,
         )
 
     async def list(self, page: int = 1) -> CredentialsListResponse:
@@ -30,10 +30,10 @@ class CredentialsClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/credentials-api/#list-credentials
         """
-        return await self._transport.api_call(
+        return await self.api_call(
             "/v0/bank/credentials/list",
             {"page": page},
-            response_model=CredentialsListResponse,
+            model=CredentialsListResponse,
         )
 
     async def list_all(self) -> builtins.list[Credential]:
@@ -58,7 +58,7 @@ class CredentialsClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/credentials-api/#force-sca-reset-or-transactions-token
         """
-        response = await self._transport.api_call(
+        response = await self.transport.api_call(
             "/v0/bank/credentials/status",
             {"credentials_token": credentials_token, "force": "sca"},
             method="PUT",
@@ -74,7 +74,7 @@ class CredentialsClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/credentials-api/#force-sca-reset-or-transactions-token
         """
-        response = await self._transport.api_call(
+        response = await self.transport.api_call(
             "/v0/bank/credentials/status",
             {"credentials_token": credentials_token, "force": "reset"},
             method="PUT",
@@ -90,7 +90,7 @@ class CredentialsClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/credentials-api/#force-sca-reset-or-transactions-token
         """
-        response = await self._transport.api_call(
+        response = await self.transport.api_call(
             "/v0/bank/credentials/status",
             {"credentials_token": credentials_token, "force": "transaction"},
             method="PUT",
@@ -104,7 +104,7 @@ class CredentialsClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/credentials-api/#delete-credentials
         """
-        await self._transport.api_call(
+        await self.transport.api_call(
             "/v0/bank/credentials",
             {"credentials_token": credentials_token},
             method="DELETE",

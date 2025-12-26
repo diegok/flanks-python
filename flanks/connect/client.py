@@ -37,7 +37,7 @@ class ConnectClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/connect-api/v2/#list-sessions
         """
-        response = await self._transport.api_call(
+        response = await self.transport.api_call(
             "/connect/v2/sessions/list-sessions",
             {
                 "query": query.model_dump(exclude_none=True) if query else {},
@@ -56,7 +56,7 @@ class ConnectClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/connect-api/v2/#create-session
         """
-        response = await self._transport.api_call(
+        response = await self.transport.api_call(
             "/connect/v2/sessions/create-session",
             {"configuration": config.model_dump()},
         )

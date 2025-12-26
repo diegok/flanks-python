@@ -18,7 +18,7 @@ class ReportClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/report-api/#list-report-templates
         """
-        response = await self._transport.api_call("/report/v1/list-templates")
+        response = await self.transport.api_call("/report/v1/list-templates")
         if not isinstance(response, dict):
             raise TypeError(f"Expected dict response, got {type(response)}")
         return [ReportTemplate.model_validate(item) for item in response.get("items", [])]
@@ -56,10 +56,10 @@ class ReportClient(BaseClient):
         if end_date is not None:
             body["end_date"] = end_date.isoformat()
 
-        return await self._transport.api_call(
+        return await self.api_call(
             "/report/v1/build-report",
             body,
-            response_model=Report,
+            model=Report,
         )
 
     async def get_status(self, report_id: int) -> Report:
@@ -67,10 +67,10 @@ class ReportClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/report-api/#get-report-status
         """
-        return await self._transport.api_call(
+        return await self.api_call(
             "/report/v1/get-report-status",
             {"report_id": report_id},
-            response_model=Report,
+            model=Report,
         )
 
     async def get_content_url(self, report_id: int) -> str:
@@ -78,7 +78,7 @@ class ReportClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/report-api/#get-report-content-url
         """
-        response = await self._transport.api_call(
+        response = await self.transport.api_call(
             "/report/v1/get-report-content",
             {"report_id": report_id},
         )
