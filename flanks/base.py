@@ -43,22 +43,19 @@ class BaseClient:
         method: str = "POST",
         params: dict[str, Any] | None = None,
         *,
-        model: type[T] | type[list[T]] | None = None,
-    ) -> T | list[T] | dict[str, Any] | list[Any]:
-        """Execute API call with optional model validation.
+        model: type[T] | type[list[T]],
+    ) -> T | list[T]:
+        """Execute API call with model validation.
 
         Args:
             path: API endpoint path
             body: JSON body for POST/PUT/DELETE requests
             method: HTTP method (GET, POST, PUT, DELETE)
             params: Query parameters for GET requests
-            model: Optional Pydantic model to validate response.
+            model: Pydantic model to validate response.
                 Use `Model` for dict responses, `list[Model]` for list responses.
         """
         result = await self.transport.api_call(path, body, method, params)
-
-        if model is None:
-            return result
 
         if get_origin(model) is list:
             inner_model = get_args(model)[0]
