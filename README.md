@@ -201,11 +201,7 @@ finally:
 
 ```python
 # For endpoints not yet wrapped by the SDK
-response = await client.transport.api_call(
-    "/custom/endpoint",
-    {"param": "value"},
-    method="POST"
-)
+response = await client.transport.api_call( "/custom/endpoint", {"param": "value"} )
 ```
 
 ## Development
