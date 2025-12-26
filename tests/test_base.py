@@ -42,7 +42,7 @@ class TestPaginate:
         )
 
         client = BaseClient(transport)
-        items = [item async for item in client._paginate("/v0/items", {}, "items", Item)]
+        items = [item async for item in client.iterate_paged("/v0/items", {}, Item)]
 
         assert len(items) == 2
         assert items[0].id == 1
@@ -85,7 +85,7 @@ class TestPaginate:
         ]
 
         client = BaseClient(transport)
-        items = [item async for item in client._paginate("/v0/items", {}, "items", Item)]
+        items = [item async for item in client.iterate_paged("/v0/items", {}, Item)]
 
         assert len(items) == 3
         assert [item.id for item in items] == [1, 2, 3]
@@ -116,7 +116,7 @@ class TestPaginate:
 
         client = BaseClient(transport)
         body = {"filter": "active"}
-        _ = [item async for item in client._paginate("/v0/items", body, "items", Item)]
+        _ = [item async for item in client.iterate_paged("/v0/items", body, Item)]
 
         # Check first request
         import json

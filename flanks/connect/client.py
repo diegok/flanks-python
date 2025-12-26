@@ -20,10 +20,9 @@ class ConnectClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/connect-api/v2/#list-sessions
         """
-        async for session in self._paginate(
+        async for session in self.iterate_paged(
             "/connect/v2/sessions/list-sessions",
             {"query": query.model_dump(exclude_none=True) if query else {}},
-            "items",
             Session,
         ):
             yield session
@@ -68,10 +67,9 @@ class ConnectClient(BaseClient):
         See: https://docs.flanks.io/pages/flanks-apis/connect-api/v2/#list-connectors
         """
         query: dict[str, Any] = {"connector_id_in": connector_ids} if connector_ids else {}
-        async for connector in self._paginate(
+        async for connector in self.iterate_paged(
             "/connect/v2/connectors/list-connectors",
             {"query": query},
-            "items",
             Connector,
         ):
             yield connector

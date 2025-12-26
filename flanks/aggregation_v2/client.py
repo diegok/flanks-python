@@ -19,10 +19,9 @@ class AggregationV2Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/v2/#list-products
         """
-        async for product in self._paginate(
+        async for product in self.iterate_paged(
             "/aggregation/v2/list-products",
             {"query": query.model_dump(exclude_none=True) if query else {}},
-            "items",
             Product,
         ):
             yield product
@@ -66,10 +65,9 @@ class AggregationV2Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/v2/#list-transactions
         """
-        async for transaction in self._paginate(
+        async for transaction in self.iterate_paged(
             "/aggregation/v2/list-transactions",
             {"query": query.model_dump(exclude_none=True, mode="json") if query else {}},
-            "items",
             Transaction,
         ):
             yield transaction

@@ -90,22 +90,20 @@ class BaseClient:
             next_page_token=response.get("next_page_token"),
         )
 
-    async def _paginate(
+    async def iterate_paged(
         self,
         path: str,
         body: dict[str, Any],
-        item_key: str,
         model: type[T],
     ) -> AsyncIterator[T]:
-        """Generic pagination helper for list endpoints."""
+        """Iterate over all items from a paginated endpoint."""
         page_token: str | None = None
         while True:
-            payload = {**body, "page_token": page_token}
-            response = await self.transport.api_call(path, payload)
-            if not isinstance(response, dict):
-                raise TypeError(f"Expected dict response, got {type(response)}")
-            for item in response[item_key]:
-                yield model.model_validate(item)
-            page_token = response.get("next_page_token")
-            if not page_token:
+            result = await self.api_call_paged(
+                path, {**body, "page_token": page_token}, model=model
+            )
+            for item in result.items:
+                yield item
+            if not result.next_page_token:
                 break
+            page_token = result.next_page_token
