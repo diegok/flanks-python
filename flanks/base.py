@@ -4,6 +4,7 @@ from typing import Any, TypeVar, cast, get_args, get_origin, overload
 from pydantic import BaseModel
 
 from flanks.connection import FlanksConnection
+from flanks.pagination import PagedResponse
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -66,6 +67,28 @@ class BaseClient:
         if not isinstance(result, dict):
             raise TypeError(f"Expected dict response, got {type(result)}")
         return cast(type[T], model).model_validate(result)
+
+    async def api_call_paged(
+        self,
+        path: str,
+        body: dict[str, Any],
+        *,
+        model: type[T],
+    ) -> PagedResponse[T]:
+        """Execute API call and return PagedResponse.
+
+        Args:
+            path: API endpoint path
+            body: JSON body (should include page_token if paginating)
+            model: Pydantic model for items in the response
+        """
+        response = await self.transport.api_call(path, body)
+        if not isinstance(response, dict):
+            raise TypeError(f"Expected dict response, got {type(response)}")
+        return PagedResponse(
+            items=[model.model_validate(item) for item in response["items"]],
+            next_page_token=response.get("next_page_token"),
+        )
 
     async def _paginate(
         self,

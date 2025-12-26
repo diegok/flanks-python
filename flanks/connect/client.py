@@ -37,18 +37,13 @@ class ConnectClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/connect-api/v2/#list-sessions
         """
-        response = await self.transport.api_call(
+        return await self.api_call_paged(
             "/connect/v2/sessions/list-sessions",
             {
                 "query": query.model_dump(exclude_none=True) if query else {},
                 "page_token": page_token,
             },
-        )
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return PagedResponse(
-            items=[Session.model_validate(item) for item in response["items"]],
-            next_page_token=response.get("next_page_token"),
+            model=Session,
         )
 
     async def create_session(self, config: SessionConfig) -> Session:

@@ -36,18 +36,13 @@ class AggregationV2Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/v2/#list-products
         """
-        response = await self.transport.api_call(
+        return await self.api_call_paged(
             "/aggregation/v2/list-products",
             {
                 "query": query.model_dump(exclude_none=True) if query else {},
                 "page_token": page_token,
             },
-        )
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return PagedResponse(
-            items=[Product.model_validate(item) for item in response["items"]],
-            next_page_token=response.get("next_page_token"),
+            model=Product,
         )
 
     async def set_product_labels(self, product_id: str, labels: dict[str, str]) -> None:
@@ -88,18 +83,13 @@ class AggregationV2Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/v2/#list-transactions
         """
-        response = await self.transport.api_call(
+        return await self.api_call_paged(
             "/aggregation/v2/list-transactions",
             {
                 "query": query.model_dump(exclude_none=True, mode="json") if query else {},
                 "page_token": page_token,
             },
-        )
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return PagedResponse(
-            items=[Transaction.model_validate(item) for item in response["items"]],
-            next_page_token=response.get("next_page_token"),
+            model=Transaction,
         )
 
     async def set_transaction_labels(self, transaction_id: str, labels: dict[str, str]) -> None:
