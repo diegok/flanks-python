@@ -226,7 +226,7 @@ uv run pytest tests/test_client.py
 ### Type Checking
 
 ```bash
-uv run mypy flanks
+uv run ty check
 ```
 
 ### Linting

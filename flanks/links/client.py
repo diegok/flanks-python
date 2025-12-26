@@ -12,7 +12,7 @@ class LinksClient(BaseClient):
     See: https://docs.flanks.io/pages/flanks-apis/links-api/
     """
 
-    async def list(self) -> list[Link]:
+    async def list(self) -> builtins.list[Link]:
         """List all links.
 
         See: https://docs.flanks.io/pages/flanks-apis/links-api/#list-links
