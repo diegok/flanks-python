@@ -6,13 +6,19 @@ from flanks.pagination import PagedResponse
 
 
 class AggregationV2Client(BaseClient):
-    """Client for Aggregation API v2."""
+    """Client for Aggregation API v2.
+
+    See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/v2/
+    """
 
     async def list_products(
         self,
         query: ProductQuery | None = None,
     ) -> AsyncIterator[Product]:
-        """Iterate over all products matching query."""
+        """Iterate over all products matching query.
+
+        See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/v2/#list-products
+        """
         async for product in self._paginate(
             "/aggregation/v2/list-products",
             {"query": query.model_dump(exclude_none=True) if query else {}},
@@ -26,7 +32,10 @@ class AggregationV2Client(BaseClient):
         query: ProductQuery | None = None,
         page_token: str | None = None,
     ) -> PagedResponse[Product]:
-        """Fetch a single page of products."""
+        """Fetch a single page of products.
+
+        See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/v2/#list-products
+        """
         response = await self._transport.api_call(
             "/aggregation/v2/list-products",
             {
@@ -42,7 +51,10 @@ class AggregationV2Client(BaseClient):
         )
 
     async def set_product_labels(self, product_id: str, labels: dict[str, str]) -> None:
-        """Set labels on a product."""
+        """Set labels on a product.
+
+        See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/v2/#set-product-labels
+        """
         await self._transport.api_call(
             "/aggregation/v2/set-product-labels",
             {
@@ -55,7 +67,10 @@ class AggregationV2Client(BaseClient):
         self,
         query: TransactionQuery | None = None,
     ) -> AsyncIterator[Transaction]:
-        """Iterate over all transactions matching query."""
+        """Iterate over all transactions matching query.
+
+        See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/v2/#list-transactions
+        """
         async for transaction in self._paginate(
             "/aggregation/v2/list-transactions",
             {"query": query.model_dump(exclude_none=True, mode="json") if query else {}},
@@ -69,7 +84,10 @@ class AggregationV2Client(BaseClient):
         query: TransactionQuery | None = None,
         page_token: str | None = None,
     ) -> PagedResponse[Transaction]:
-        """Fetch a single page of transactions."""
+        """Fetch a single page of transactions.
+
+        See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/v2/#list-transactions
+        """
         response = await self._transport.api_call(
             "/aggregation/v2/list-transactions",
             {
@@ -85,7 +103,10 @@ class AggregationV2Client(BaseClient):
         )
 
     async def set_transaction_labels(self, transaction_id: str, labels: dict[str, str]) -> None:
-        """Set labels on a transaction."""
+        """Set labels on a transaction.
+
+        See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/v2/#set-transaction-labels
+        """
         await self._transport.api_call(
             "/aggregation/v2/set-transaction-labels",
             {

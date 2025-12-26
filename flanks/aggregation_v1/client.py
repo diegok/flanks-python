@@ -14,7 +14,10 @@ from flanks.base import BaseClient
 
 
 class AggregationV1Client(BaseClient):
-    """Client for Aggregation API v1."""
+    """Client for Aggregation API v1.
+
+    See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/
+    """
 
     async def get_portfolios(
         self,
@@ -22,7 +25,10 @@ class AggregationV1Client(BaseClient):
         query: dict[str, Any] | None = None,
         ignore_data_error: bool = False,
     ) -> list[Portfolio]:
-        """Get investment portfolios."""
+        """Get investment portfolios.
+
+        See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-portfolios
+        """
         response = await self._transport.api_call(
             "/v0/bank/credentials/portfolio",
             {
@@ -41,7 +47,10 @@ class AggregationV1Client(BaseClient):
         query: dict[str, Any] | None = None,
         ignore_data_error: bool = False,
     ) -> list[Investment]:
-        """Get investment positions."""
+        """Get investment positions.
+
+        See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-investments
+        """
         response = await self._transport.api_call(
             "/v0/bank/credentials/investment",
             {
@@ -60,7 +69,10 @@ class AggregationV1Client(BaseClient):
         query: dict[str, Any] | None = None,
         ignore_data_error: bool = False,
     ) -> list[Transaction]:
-        """Get investment transactions."""
+        """Get investment transactions.
+
+        See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-investment-transactions
+        """
         response = await self._transport.api_call(
             "/v0/bank/credentials/investment/transaction",
             {
@@ -79,7 +91,10 @@ class AggregationV1Client(BaseClient):
         query: dict[str, Any] | None = None,
         ignore_data_error: bool = False,
     ) -> list[Account]:
-        """Get bank accounts."""
+        """Get bank accounts.
+
+        See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-accounts
+        """
         response = await self._transport.api_call(
             "/v0/bank/credentials/account",
             {
@@ -98,7 +113,10 @@ class AggregationV1Client(BaseClient):
         query: dict[str, Any] | None = None,
         ignore_data_error: bool = False,
     ) -> list[Transaction]:
-        """Get account transactions."""
+        """Get account transactions.
+
+        See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-account-transactions
+        """
         response = await self._transport.api_call(
             "/v0/bank/credentials/data",
             {
@@ -117,7 +135,10 @@ class AggregationV1Client(BaseClient):
         query: dict[str, Any] | None = None,
         ignore_data_error: bool = False,
     ) -> list[Liability]:
-        """Get liabilities (loans, mortgages)."""
+        """Get liabilities (loans, mortgages).
+
+        See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-liabilities
+        """
         response = await self._transport.api_call(
             "/v0/bank/credentials/liability",
             {
@@ -136,7 +157,10 @@ class AggregationV1Client(BaseClient):
         query: dict[str, Any] | None = None,
         ignore_data_error: bool = False,
     ) -> list[Transaction]:
-        """Get liability transactions."""
+        """Get liability transactions.
+
+        See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-liability-transactions
+        """
         response = await self._transport.api_call(
             "/v0/bank/credentials/liability/transaction",
             {
@@ -155,7 +179,10 @@ class AggregationV1Client(BaseClient):
         query: dict[str, Any] | None = None,
         ignore_data_error: bool = False,
     ) -> list[Card]:
-        """Get credit/debit cards."""
+        """Get credit/debit cards.
+
+        See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-cards
+        """
         response = await self._transport.api_call(
             "/v0/bank/credentials/card",
             {
@@ -174,7 +201,10 @@ class AggregationV1Client(BaseClient):
         query: dict[str, Any] | None = None,
         ignore_data_error: bool = False,
     ) -> list[Transaction]:
-        """Get card transactions."""
+        """Get card transactions.
+
+        See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-card-transactions
+        """
         response = await self._transport.api_call(
             "/v0/bank/credentials/card/transaction",
             {
@@ -195,6 +225,8 @@ class AggregationV1Client(BaseClient):
         """Get account holder identity.
 
         Note: This endpoint returns a single object, not an array.
+
+        See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-identity
         """
         response = await self._transport.api_call(
             "/v0/bank/credentials/auth/",
@@ -212,7 +244,10 @@ class AggregationV1Client(BaseClient):
         credentials_token: str,
         ignore_data_error: bool = False,
     ) -> list[Holder]:
-        """Get account holders."""
+        """Get account holders.
+
+        See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-holders
+        """
         response = await self._transport.api_call(
             "/v0/bank/credentials/holder",
             {

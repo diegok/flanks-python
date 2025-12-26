@@ -8,10 +8,16 @@ from flanks.report.models import Report, ReportTemplate
 
 
 class ReportClient(BaseClient):
-    """Client for Report API (beta)."""
+    """Client for Report API (beta).
+
+    See: https://docs.flanks.io/pages/flanks-apis/report-api/
+    """
 
     async def list_templates(self) -> list[ReportTemplate]:
-        """List all available report templates."""
+        """List all available report templates.
+
+        See: https://docs.flanks.io/pages/flanks-apis/report-api/#list-report-templates
+        """
         response = await self._transport.api_call("/report/v1/list-templates")
         if not isinstance(response, dict):
             raise TypeError(f"Expected dict response, got {type(response)}")
@@ -36,6 +42,8 @@ class ReportClient(BaseClient):
             language: Language code (en, es, fr). Defaults to "en"
             start_date: Report start date (optional)
             end_date: Report end date. Defaults to today
+
+        See: https://docs.flanks.io/pages/flanks-apis/report-api/#build-report
         """
         body: dict[str, Any] = {
             "template_id": template_id,
@@ -54,7 +62,10 @@ class ReportClient(BaseClient):
         return Report.model_validate(response)
 
     async def get_status(self, report_id: int) -> Report:
-        """Get the status of a report."""
+        """Get the status of a report.
+
+        See: https://docs.flanks.io/pages/flanks-apis/report-api/#get-report-status
+        """
         response = await self._transport.api_call(
             "/report/v1/get-report-status",
             {"report_id": report_id},
@@ -64,7 +75,10 @@ class ReportClient(BaseClient):
         return Report.model_validate(response)
 
     async def get_content_url(self, report_id: int) -> str:
-        """Get the content URL for a completed report."""
+        """Get the content URL for a completed report.
+
+        See: https://docs.flanks.io/pages/flanks-apis/report-api/#get-report-content-url
+        """
         response = await self._transport.api_call(
             "/report/v1/get-report-content",
             {"report_id": report_id},

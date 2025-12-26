@@ -7,10 +7,16 @@ from flanks.links.models import Link, LinkCode, LinkCodeExchangeResult
 
 
 class LinksClient(BaseClient):
-    """Client for Links API (legacy)."""
+    """Client for Links API (legacy).
+
+    See: https://docs.flanks.io/pages/flanks-apis/links-api/
+    """
 
     async def list(self) -> list[Link]:
-        """List all links."""
+        """List all links.
+
+        See: https://docs.flanks.io/pages/flanks-apis/links-api/#list-links
+        """
         response = await self._transport.api_call("/v0/links/list-links")
         if not isinstance(response, list):
             raise TypeError(f"Expected list response, got {type(response)}")
@@ -25,7 +31,10 @@ class LinksClient(BaseClient):
         terms_and_conditions_url: str | None = None,
         privacy_policy_url: str | None = None,
     ) -> Link:
-        """Create a new link."""
+        """Create a new link.
+
+        See: https://docs.flanks.io/pages/flanks-apis/links-api/#create-link
+        """
         body: dict[str, str] = {"redirect_uri": redirect_uri}
         if name is not None:
             body["name"] = name
@@ -51,7 +60,10 @@ class LinksClient(BaseClient):
         terms_and_conditions_url: str | None = None,
         privacy_policy_url: str | None = None,
     ) -> Link:
-        """Edit an existing link. Pass None to remove an attribute."""
+        """Edit an existing link. Pass None to remove an attribute.
+
+        See: https://docs.flanks.io/pages/flanks-apis/links-api/#edit-link
+        """
         body: dict[str, str | None] = {"token": token}
         if redirect_uri is not None:
             body["redirect_uri"] = redirect_uri
@@ -70,25 +82,37 @@ class LinksClient(BaseClient):
         return Link.model_validate(response)
 
     async def delete(self, token: str) -> None:
-        """Delete a link. Only links with no pending codes can be deleted."""
+        """Delete a link. Only links with no pending codes can be deleted.
+
+        See: https://docs.flanks.io/pages/flanks-apis/links-api/#delete-link
+        """
         await self._transport.api_call("/v0/links/delete-link", {"token": token})
 
     async def pause(self, token: str) -> Link:
-        """Pause a link."""
+        """Pause a link.
+
+        See: https://docs.flanks.io/pages/flanks-apis/links-api/#pause-link
+        """
         response = await self._transport.api_call("/v0/links/pause-link", {"token": token})
         if not isinstance(response, dict):
             raise TypeError(f"Expected dict response, got {type(response)}")
         return Link.model_validate(response)
 
     async def resume(self, token: str) -> Link:
-        """Resume a paused link."""
+        """Resume a paused link.
+
+        See: https://docs.flanks.io/pages/flanks-apis/links-api/#resume-link
+        """
         response = await self._transport.api_call("/v0/links/resume-link", {"token": token})
         if not isinstance(response, dict):
             raise TypeError(f"Expected dict response, got {type(response)}")
         return Link.model_validate(response)
 
     async def get_unused_codes(self, link_token: str | None = None) -> builtins.list[LinkCode]:
-        """Get unused exchange codes, optionally filtered by link_token."""
+        """Get unused exchange codes, optionally filtered by link_token.
+
+        See: https://docs.flanks.io/pages/flanks-apis/links-api/#get-unused-link-codes
+        """
         params = {"link_token": link_token} if link_token else None
         response = await self._transport.api_call(
             "/v0/platform/link",
@@ -100,7 +124,10 @@ class LinksClient(BaseClient):
         return [LinkCode.model_validate(item) for item in response]
 
     async def exchange_code(self, code: str) -> LinkCodeExchangeResult:
-        """Exchange a code for credentials. The code is single-use."""
+        """Exchange a code for credentials. The code is single-use.
+
+        See: https://docs.flanks.io/pages/flanks-apis/links-api/#exchange-link-code-for-credentials-token
+        """
         response = await self._transport.api_call("/v0/platform/link", {"code": code})
         if not isinstance(response, dict):
             raise TypeError(f"Expected dict response, got {type(response)}")

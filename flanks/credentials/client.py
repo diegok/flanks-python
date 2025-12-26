@@ -7,10 +7,16 @@ from flanks.credentials.models import Credential, CredentialStatus, CredentialsL
 
 
 class CredentialsClient(BaseClient):
-    """Client for Credentials API."""
+    """Client for Credentials API.
+
+    See: https://docs.flanks.io/pages/flanks-apis/credentials-api/
+    """
 
     async def get_status(self, credentials_token: str) -> CredentialStatus:
-        """Get status of a credential."""
+        """Get status of a credential.
+
+        See: https://docs.flanks.io/pages/flanks-apis/credentials-api/#get-credentials-status
+        """
         response = await self._transport.api_call(
             "/v0/bank/credentials/status",
             {"credentials_token": credentials_token},
@@ -23,6 +29,8 @@ class CredentialsClient(BaseClient):
         """List credentials with page-number pagination.
 
         Returns a response with items, page number, and total pages.
+
+        See: https://docs.flanks.io/pages/flanks-apis/credentials-api/#list-credentials
         """
         response = await self._transport.api_call(
             "/v0/bank/credentials/list",
@@ -33,7 +41,10 @@ class CredentialsClient(BaseClient):
         return CredentialsListResponse.model_validate(response)
 
     async def list_all(self) -> builtins.list[Credential]:
-        """List all credentials across all pages."""
+        """List all credentials across all pages.
+
+        See: https://docs.flanks.io/pages/flanks-apis/credentials-api/#list-credentials
+        """
         all_credentials: builtins.list[Credential] = []
         page = 1
         while True:
@@ -48,6 +59,8 @@ class CredentialsClient(BaseClient):
         """Force SCA (Strong Customer Authentication) refresh.
 
         Returns the sca_token to use with Connect API.
+
+        See: https://docs.flanks.io/pages/flanks-apis/credentials-api/#force-sca-reset-or-transactions-token
         """
         response = await self._transport.api_call(
             "/v0/bank/credentials/status",
@@ -62,6 +75,8 @@ class CredentialsClient(BaseClient):
         """Force credential reset.
 
         Returns the reset_token to use with Connect API.
+
+        See: https://docs.flanks.io/pages/flanks-apis/credentials-api/#force-sca-reset-or-transactions-token
         """
         response = await self._transport.api_call(
             "/v0/bank/credentials/status",
@@ -76,6 +91,8 @@ class CredentialsClient(BaseClient):
         """Force transaction data refresh.
 
         Returns the transaction_token to use with Connect API.
+
+        See: https://docs.flanks.io/pages/flanks-apis/credentials-api/#force-sca-reset-or-transactions-token
         """
         response = await self._transport.api_call(
             "/v0/bank/credentials/status",
@@ -87,7 +104,10 @@ class CredentialsClient(BaseClient):
         return str(response["transaction_token"])
 
     async def delete(self, credentials_token: str) -> None:
-        """Delete a credential."""
+        """Delete a credential.
+
+        See: https://docs.flanks.io/pages/flanks-apis/credentials-api/#delete-credentials
+        """
         await self._transport.api_call(
             "/v0/bank/credentials",
             {"credentials_token": credentials_token},
