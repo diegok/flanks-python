@@ -17,13 +17,11 @@ class CredentialsClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/credentials-api/#get-credentials-status
         """
-        response = await self._transport.api_call(
+        return await self._transport.api_call(
             "/v0/bank/credentials/status",
             {"credentials_token": credentials_token},
+            response_model=CredentialStatus,
         )
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return CredentialStatus.model_validate(response)
 
     async def list(self, page: int = 1) -> CredentialsListResponse:
         """List credentials with page-number pagination.
@@ -32,13 +30,11 @@ class CredentialsClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/credentials-api/#list-credentials
         """
-        response = await self._transport.api_call(
+        return await self._transport.api_call(
             "/v0/bank/credentials/list",
             {"page": page},
+            response_model=CredentialsListResponse,
         )
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return CredentialsListResponse.model_validate(response)
 
     async def list_all(self) -> builtins.list[Credential]:
         """List all credentials across all pages.

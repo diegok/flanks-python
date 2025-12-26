@@ -56,23 +56,22 @@ class ReportClient(BaseClient):
         if end_date is not None:
             body["end_date"] = end_date.isoformat()
 
-        response = await self._transport.api_call("/report/v1/build-report", body)
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return Report.model_validate(response)
+        return await self._transport.api_call(
+            "/report/v1/build-report",
+            body,
+            response_model=Report,
+        )
 
     async def get_status(self, report_id: int) -> Report:
         """Get the status of a report.
 
         See: https://docs.flanks.io/pages/flanks-apis/report-api/#get-report-status
         """
-        response = await self._transport.api_call(
+        return await self._transport.api_call(
             "/report/v1/get-report-status",
             {"report_id": report_id},
+            response_model=Report,
         )
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return Report.model_validate(response)
 
     async def get_content_url(self, report_id: int) -> str:
         """Get the content URL for a completed report.

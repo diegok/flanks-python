@@ -13,7 +13,8 @@ class EntitiesClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/entities-api/#get-entities
         """
-        response = await self._transport.api_call("/v0/bank/available", method="GET")
-        if not isinstance(response, list):
-            raise TypeError(f"Expected list response, got {type(response)}")
-        return [Entity.model_validate(item) for item in response]
+        return await self._transport.api_call(
+            "/v0/bank/available",
+            method="GET",
+            response_model=list[Entity],
+        )

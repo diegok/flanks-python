@@ -17,10 +17,10 @@ class LinksClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/links-api/#list-links
         """
-        response = await self._transport.api_call("/v0/links/list-links")
-        if not isinstance(response, list):
-            raise TypeError(f"Expected list response, got {type(response)}")
-        return [Link.model_validate(item) for item in response]
+        return await self._transport.api_call(
+            "/v0/links/list-links",
+            response_model=list[Link],
+        )
 
     async def create(
         self,
@@ -45,10 +45,11 @@ class LinksClient(BaseClient):
         if privacy_policy_url is not None:
             body["privacy_policy_url"] = privacy_policy_url
 
-        response = await self._transport.api_call("/v0/links/create-link", body)
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return Link.model_validate(response)
+        return await self._transport.api_call(
+            "/v0/links/create-link",
+            body,
+            response_model=Link,
+        )
 
     async def edit(
         self,
@@ -76,10 +77,11 @@ class LinksClient(BaseClient):
         if privacy_policy_url is not None:
             body["privacy_policy_url"] = privacy_policy_url
 
-        response = await self._transport.api_call("/v0/links/edit-link", body)
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return Link.model_validate(response)
+        return await self._transport.api_call(
+            "/v0/links/edit-link",
+            body,
+            response_model=Link,
+        )
 
     async def delete(self, token: str) -> None:
         """Delete a link. Only links with no pending codes can be deleted.
@@ -93,20 +95,22 @@ class LinksClient(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/links-api/#pause-link
         """
-        response = await self._transport.api_call("/v0/links/pause-link", {"token": token})
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return Link.model_validate(response)
+        return await self._transport.api_call(
+            "/v0/links/pause-link",
+            {"token": token},
+            response_model=Link,
+        )
 
     async def resume(self, token: str) -> Link:
         """Resume a paused link.
 
         See: https://docs.flanks.io/pages/flanks-apis/links-api/#resume-link
         """
-        response = await self._transport.api_call("/v0/links/resume-link", {"token": token})
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return Link.model_validate(response)
+        return await self._transport.api_call(
+            "/v0/links/resume-link",
+            {"token": token},
+            response_model=Link,
+        )
 
     async def get_unused_codes(self, link_token: str | None = None) -> builtins.list[LinkCode]:
         """Get unused exchange codes, optionally filtered by link_token.
@@ -114,21 +118,20 @@ class LinksClient(BaseClient):
         See: https://docs.flanks.io/pages/flanks-apis/links-api/#get-unused-link-codes
         """
         params = {"link_token": link_token} if link_token else None
-        response = await self._transport.api_call(
+        return await self._transport.api_call(
             "/v0/platform/link",
             method="GET",
             params=params,
+            response_model=list[LinkCode],
         )
-        if not isinstance(response, list):
-            raise TypeError(f"Expected list response, got {type(response)}")
-        return [LinkCode.model_validate(item) for item in response]
 
     async def exchange_code(self, code: str) -> LinkCodeExchangeResult:
         """Exchange a code for credentials. The code is single-use.
 
         See: https://docs.flanks.io/pages/flanks-apis/links-api/#exchange-link-code-for-credentials-token
         """
-        response = await self._transport.api_call("/v0/platform/link", {"code": code})
-        if not isinstance(response, dict):
-            raise TypeError(f"Expected dict response, got {type(response)}")
-        return LinkCodeExchangeResult.model_validate(response)
+        return await self._transport.api_call(
+            "/v0/platform/link",
+            {"code": code},
+            response_model=LinkCodeExchangeResult,
+        )

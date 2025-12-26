@@ -29,17 +29,15 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-portfolios
         """
-        response = await self._transport.api_call(
+        return await self._transport.api_call(
             "/v0/bank/credentials/portfolio",
             {
                 "credentials_token": credentials_token,
                 "query": query or {},
                 "ignore_data_error": ignore_data_error,
             },
+            response_model=list[Portfolio],
         )
-        if not isinstance(response, list):
-            raise TypeError(f"Expected list response, got {type(response)}")
-        return [Portfolio.model_validate(item) for item in response]
 
     async def get_investments(
         self,
@@ -51,17 +49,15 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-investments
         """
-        response = await self._transport.api_call(
+        return await self._transport.api_call(
             "/v0/bank/credentials/investment",
             {
                 "credentials_token": credentials_token,
                 "query": query or {},
                 "ignore_data_error": ignore_data_error,
             },
+            response_model=list[Investment],
         )
-        if not isinstance(response, list):
-            raise TypeError(f"Expected list response, got {type(response)}")
-        return [Investment.model_validate(item) for item in response]
 
     async def get_investment_transactions(
         self,
@@ -73,17 +69,15 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-investment-transactions
         """
-        response = await self._transport.api_call(
+        return await self._transport.api_call(
             "/v0/bank/credentials/investment/transaction",
             {
                 "credentials_token": credentials_token,
                 "query": query or {},
                 "ignore_data_error": ignore_data_error,
             },
+            response_model=list[Transaction],
         )
-        if not isinstance(response, list):
-            raise TypeError(f"Expected list response, got {type(response)}")
-        return [Transaction.model_validate(item) for item in response]
 
     async def get_accounts(
         self,
@@ -95,17 +89,15 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-accounts
         """
-        response = await self._transport.api_call(
+        return await self._transport.api_call(
             "/v0/bank/credentials/account",
             {
                 "credentials_token": credentials_token,
                 "query": query or {},
                 "ignore_data_error": ignore_data_error,
             },
+            response_model=list[Account],
         )
-        if not isinstance(response, list):
-            raise TypeError(f"Expected list response, got {type(response)}")
-        return [Account.model_validate(item) for item in response]
 
     async def get_account_transactions(
         self,
@@ -117,17 +109,15 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-account-transactions
         """
-        response = await self._transport.api_call(
+        return await self._transport.api_call(
             "/v0/bank/credentials/data",
             {
                 "credentials_token": credentials_token,
                 "query": query or {},
                 "ignore_data_error": ignore_data_error,
             },
+            response_model=list[Transaction],
         )
-        if not isinstance(response, list):
-            raise TypeError(f"Expected list response, got {type(response)}")
-        return [Transaction.model_validate(item) for item in response]
 
     async def get_liabilities(
         self,
@@ -139,17 +129,15 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-liabilities
         """
-        response = await self._transport.api_call(
+        return await self._transport.api_call(
             "/v0/bank/credentials/liability",
             {
                 "credentials_token": credentials_token,
                 "query": query or {},
                 "ignore_data_error": ignore_data_error,
             },
+            response_model=list[Liability],
         )
-        if not isinstance(response, list):
-            raise TypeError(f"Expected list response, got {type(response)}")
-        return [Liability.model_validate(item) for item in response]
 
     async def get_liability_transactions(
         self,
@@ -161,17 +149,15 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-liability-transactions
         """
-        response = await self._transport.api_call(
+        return await self._transport.api_call(
             "/v0/bank/credentials/liability/transaction",
             {
                 "credentials_token": credentials_token,
                 "query": query or {},
                 "ignore_data_error": ignore_data_error,
             },
+            response_model=list[Transaction],
         )
-        if not isinstance(response, list):
-            raise TypeError(f"Expected list response, got {type(response)}")
-        return [Transaction.model_validate(item) for item in response]
 
     async def get_cards(
         self,
@@ -183,17 +169,15 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-cards
         """
-        response = await self._transport.api_call(
+        return await self._transport.api_call(
             "/v0/bank/credentials/card",
             {
                 "credentials_token": credentials_token,
                 "query": query or {},
                 "ignore_data_error": ignore_data_error,
             },
+            response_model=list[Card],
         )
-        if not isinstance(response, list):
-            raise TypeError(f"Expected list response, got {type(response)}")
-        return [Card.model_validate(item) for item in response]
 
     async def get_card_transactions(
         self,
@@ -205,17 +189,15 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-card-transactions
         """
-        response = await self._transport.api_call(
+        return await self._transport.api_call(
             "/v0/bank/credentials/card/transaction",
             {
                 "credentials_token": credentials_token,
                 "query": query or {},
                 "ignore_data_error": ignore_data_error,
             },
+            response_model=list[Transaction],
         )
-        if not isinstance(response, list):
-            raise TypeError(f"Expected list response, got {type(response)}")
-        return [Transaction.model_validate(item) for item in response]
 
     async def get_identity(
         self,
@@ -248,13 +230,11 @@ class AggregationV1Client(BaseClient):
 
         See: https://docs.flanks.io/pages/flanks-apis/aggregation-api/#get-holders
         """
-        response = await self._transport.api_call(
+        return await self._transport.api_call(
             "/v0/bank/credentials/holder",
             {
                 "credentials_token": credentials_token,
                 "ignore_data_error": ignore_data_error,
             },
+            response_model=list[Holder],
         )
-        if not isinstance(response, list):
-            raise TypeError(f"Expected list response, got {type(response)}")
-        return [Holder.model_validate(item) for item in response]

@@ -1,9 +1,14 @@
+from __future__ import annotations
+
 import asyncio
 import time
 from functools import cached_property
-from typing import Any
+from typing import Any, TypeVar, cast, get_args, get_origin, overload
 
 import httpx
+from pydantic import BaseModel
+
+T = TypeVar("T", bound=BaseModel)
 
 from flanks.exceptions import (
     FlanksAuthError,
@@ -76,13 +81,46 @@ class FlanksConnection:
         """Close underlying HTTP client."""
         await self._http.aclose()
 
+    @overload
     async def api_call(
         self,
         path: str,
         body: dict[str, Any] | None = None,
         method: str = "POST",
         params: dict[str, Any] | None = None,
-    ) -> dict[str, Any] | list[Any]:
+        *,
+        response_model: type[T],
+    ) -> T: ...
+
+    @overload
+    async def api_call(
+        self,
+        path: str,
+        body: dict[str, Any] | None = None,
+        method: str = "POST",
+        params: dict[str, Any] | None = None,
+        *,
+        response_model: type[list[T]],
+    ) -> list[T]: ...
+
+    @overload
+    async def api_call(
+        self,
+        path: str,
+        body: dict[str, Any] | None = None,
+        method: str = "POST",
+        params: dict[str, Any] | None = None,
+    ) -> dict[str, Any] | list[Any]: ...
+
+    async def api_call(
+        self,
+        path: str,
+        body: dict[str, Any] | None = None,
+        method: str = "POST",
+        params: dict[str, Any] | None = None,
+        *,
+        response_model: type[T] | type[list[T]] | None = None,
+    ) -> T | list[T] | dict[str, Any] | list[Any]:
         """Execute API call with automatic auth and retries.
 
         Args:
@@ -90,13 +128,16 @@ class FlanksConnection:
             body: JSON body for POST/PUT/DELETE requests
             method: HTTP method (GET, POST, PUT, DELETE)
             params: Query parameters for GET requests
+            response_model: Optional Pydantic model to validate response.
+                Use `Model` for dict responses, `list[Model]` for list responses.
         """
         await self._ensure_token()
 
         last_error: Exception | None = None
         for attempt in range(self._retries + 1):
             try:
-                return await self._execute(method, path, body, params)
+                result = await self._execute(method, path, body, params)
+                return self._validate_response(result, response_model)
             except FlanksServerError as e:
                 last_error = e
                 if attempt < self._retries:
@@ -105,7 +146,8 @@ class FlanksConnection:
                 # Token might have been revoked - refresh and retry once
                 await self._refresh_token()
                 try:
-                    return await self._execute(method, path, body, params)
+                    result = await self._execute(method, path, body, params)
+                    return self._validate_response(result, response_model)
                 except FlanksAuthError:
                     raise
 
@@ -113,6 +155,25 @@ class FlanksConnection:
             raise last_error
 
         raise RuntimeError("Unexpected state: no result and no error")
+
+    def _validate_response(
+        self,
+        result: dict[str, Any] | list[Any],
+        response_model: type[T] | type[list[T]] | None,
+    ) -> T | list[T] | dict[str, Any] | list[Any]:
+        """Validate and convert response to model if specified."""
+        if response_model is None:
+            return result
+
+        if get_origin(response_model) is list:
+            inner_model = get_args(response_model)[0]
+            if not isinstance(result, list):
+                raise TypeError(f"Expected list response, got {type(result)}")
+            return [inner_model.model_validate(item) for item in result]
+
+        if not isinstance(result, dict):
+            raise TypeError(f"Expected dict response, got {type(result)}")
+        return cast(type[T], response_model).model_validate(result)
 
     async def _execute(
         self,
