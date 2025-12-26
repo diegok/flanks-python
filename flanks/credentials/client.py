@@ -3,7 +3,7 @@ from __future__ import annotations
 import builtins
 
 from flanks.base import BaseClient
-from flanks.credentials.models import Credential, CredentialStatus, CredentialsListResponse
+from flanks.credentials.models import Credential, CredentialsListResponse, CredentialStatus
 
 
 class CredentialsClient(BaseClient):

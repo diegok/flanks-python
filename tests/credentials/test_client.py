@@ -3,7 +3,7 @@ import pytest
 import respx
 
 from flanks import FlanksClient
-from flanks.credentials.models import Credential, CredentialStatus, CredentialsListResponse
+from flanks.credentials.models import Credential, CredentialsListResponse, CredentialStatus
 
 
 class TestCredentialModels:

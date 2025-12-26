@@ -214,26 +214,26 @@ response = await client.transport.api_call(
 
 ```bash
 # Run all tests
-poetry run pytest
+uv run pytest
 
 # Run with verbose output
-poetry run pytest -v
+uv run pytest -v
 
 # Run specific test file
-poetry run pytest tests/test_client.py
+uv run pytest tests/test_client.py
 ```
 
 ### Type Checking
 
 ```bash
-poetry run mypy flanks
+uv run mypy flanks
 ```
 
 ### Linting
 
 ```bash
-poetry run ruff check flanks tests
-poetry run ruff format flanks tests
+uv run ruff check flanks tests
+uv run ruff format flanks tests
 ```
 
 ## Requirements
