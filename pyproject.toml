@@ -30,7 +30,7 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/flanksio/flanks-python"
+Repository = "https://github.com/diegok/flanks-python"
 
 [dependency-groups]
 dev = [
