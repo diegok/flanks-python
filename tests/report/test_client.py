@@ -34,6 +34,7 @@ class TestReportModels:
     def test_all_status_values(self) -> None:
         for status_val in ["new", "payload", "file", "ready", "fail"]:
             report = Report.model_validate({"report_id": 1, "status": status_val})
+            assert report.status is not None
             assert report.status.value == status_val
 
 
