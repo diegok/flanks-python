@@ -1,6 +1,6 @@
 # Flanks Python SDK
 
-Async Python SDK for the [Flanks API](https://docs.flanks.io/).
+Async Python client for the [Flanks API](https://docs.flanks.io/).
 
 ## Features
 
