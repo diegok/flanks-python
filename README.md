@@ -14,7 +14,7 @@ Async Python client for the [Flanks API](https://docs.flanks.io/).
 ## Installation
 
 ```bash
-pip install flanks
+pip install flanks-client
 ```
 
 ## Quick Start
